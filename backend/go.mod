@@ -3,12 +3,14 @@ module twitter-clone
 go 1.22.2
 
 require (
+	github.com/google/uuid v1.5.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/kataras/iris/v12 v12.2.10
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/samber/do v1.6.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.18.2
+	golang.org/x/crypto v0.18.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.9
 )
@@ -26,7 +28,6 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47 // indirect
-	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/iris-contrib/schema v0.0.6 // indirect
@@ -64,7 +65,6 @@ require (
 	github.com/yosssi/ace v0.0.5 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3 // indirect
 	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect

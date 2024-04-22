@@ -27,11 +27,13 @@ func NewUserDBRepository(i *do.Injector) (UserRepository, error) {
 }
 
 type CreateUserPayload struct {
-	Name string
+	Name     string
+	Password []byte
+	Username string
 }
 
 func (r UserRepository) Create(ctx context.Context, payload CreateUserPayload) (*database.User, error) {
-	user := database.User{Name: payload.Name}
+	user := database.User{Name: payload.Name, Password: payload.Password, Username: payload.Username}
 
 	result := r.db.WithContext(ctx).Create(&user)
 	if err := result.Error; err != nil {
@@ -66,7 +68,7 @@ type GetUserByUsernamePayload struct {
 func (r UserRepository) GetByUsername(ctx context.Context, payload GetUserByUsernamePayload) (*database.User, error) {
 	var user = database.User{Username: payload.Username}
 
-	result := r.db.WithContext(ctx).Preload("Followings").Preload("Followers").First(&user)
+	result := r.db.WithContext(ctx).Debug().Preload("Followings").Preload("Followers").Where(&user).First(&user)
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound

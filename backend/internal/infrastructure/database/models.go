@@ -18,7 +18,7 @@ var allModels = []any{
 type User struct {
 	ID          uint64 `gorm:"primaryKey"`
 	Username    string
-	Password    string
+	Password    []byte
 	Name        string
 	Website     string
 	Description string

@@ -1,0 +1,5 @@
+FROM node:18
+
+WORKDIR /frontend
+
+CMD [ -d "node_modules" ] && npm run dev || npm install && npm run dev

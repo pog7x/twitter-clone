@@ -56,7 +56,7 @@ func (r SessionRepository) Get(ctx context.Context, payload GetSessionPayload) (
 
 	result := r.db.WithContext(ctx).
 		Joins("User").
-		Where("session_id = ? AND expired_at < ?", payload.SessionID, time.Now()).
+		Where("session_id = ? AND expired_at > ?", payload.SessionID, time.Now()).
 		First(&session)
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -70,6 +70,18 @@ func (r SessionRepository) Get(ctx context.Context, payload GetSessionPayload) (
 
 func (r SessionRepository) Delete(ctx context.Context, sessionID string) error {
 	result := r.db.WithContext(ctx).Delete(&database.Session{SessionID: sessionID})
+	if err := result.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrNotFound
+		}
+		return ErrInternal
+	}
+
+	return nil
+}
+
+func (r SessionRepository) DeleteByUserID(ctx context.Context, userID uint64) error {
+	result := r.db.WithContext(ctx).Debug().Where(&database.Session{UserID: userID}).Delete(&database.Session{})
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrNotFound

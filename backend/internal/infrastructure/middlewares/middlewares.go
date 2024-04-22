@@ -92,8 +92,15 @@ func LoginMiddleware(
 		}
 
 		// Validate password from request body
-		if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login.Passwrod)); err != nil {
+		if err = bcrypt.CompareHashAndPassword(user.Password, []byte(login.Passwrod)); err != nil {
 			response.SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
+			return
+		}
+
+		// Delete all active user's sessions
+		err = sessionRepo.DeleteByUserID(ctx, user.ID)
+		if err != nil {
+			response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
 			return
 		}
 

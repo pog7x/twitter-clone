@@ -5,7 +5,7 @@ import (
 )
 
 type ErrorResponse struct {
-	Result       bool   `json:"result"`
+	Success      bool   `json:"success"`
 	ErrorType    string `json:"error_type"`
 	ErrorMessage string `json:"error_message"`
 }

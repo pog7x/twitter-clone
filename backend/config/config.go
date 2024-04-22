@@ -16,6 +16,9 @@ type Config struct {
 	Port int    `mapstructure:"PORT"`
 
 	DatabaseURL string `mapstructure:"DATABASE_URL"`
+
+	EncodedSessionHashKey  string `mapstructure:"ENCODED_SESSION_HASH_KEY"`
+	EncodedSessionBlockKey string `mapstructure:"ENCODED_SESSION_BLOCK_KEY"`
 }
 
 var (

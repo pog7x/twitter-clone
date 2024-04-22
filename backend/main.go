@@ -1,7 +1,7 @@
 package main
 
 import (
-	"context"
+	"encoding/base64"
 	"fmt"
 
 	"twitter-clone/config"
@@ -23,6 +23,18 @@ import (
 func main() {
 	cfg := config.LoadConfig()
 	logger, _ := logger.NewLogger(cfg)
+
+	hashKey, err := base64.StdEncoding.DecodeString(cfg.EncodedSessionHashKey)
+	if err != nil {
+		panic(err)
+	}
+
+	blockKey, err := base64.StdEncoding.DecodeString(cfg.EncodedSessionBlockKey)
+	if err != nil {
+		panic(err)
+	}
+
+	sc := securecookie.New(hashKey, blockKey)
 
 	injector := do.NewWithOpts(&do.InjectorOpts{Logf: logger.Debugf})
 
@@ -48,11 +60,6 @@ func main() {
 	app.UseRouter(irislog.New())
 
 	app.UseRouter(middlewares.CORS)
-
-	hashKey := securecookie.GenerateRandomKey(64)
-	blockKey := securecookie.GenerateRandomKey(32)
-
-	sc := securecookie.New(hashKey, blockKey)
 
 	app.PartyFunc("/login", func(login iris.Party) {
 		login.Post("/", middlewares.LoginMiddleware(
@@ -89,7 +96,12 @@ func main() {
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[dbrepository.UserRepository](injector))
 
-		do.MustInvoke[dbrepository.UserRepository](injector).Create(context.Background(), dbrepository.CreateUserPayload{Name: "huesos"})
+		// pass, _ := bcrypt.GenerateFromPassword([]byte("sosu_1"), bcrypt.DefaultCost)
+		// do.MustInvoke[dbrepository.UserRepository](injector).Create(context.Background(), dbrepository.CreateUserPayload{
+		// 	Name:     "huesos",
+		// 	Password: pass,
+		// 	Username: "hueta",
+		// })
 
 		r.Get("/me/", api.MeHandler)
 		r.Get("/{id:uint64}/", api.UserHandler)
