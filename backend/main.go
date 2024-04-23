@@ -39,7 +39,7 @@ func main() {
 	app.UseRouter(middlewares.CORS)
 
 	app.PartyFunc("/login", func(login iris.Party) {
-		login.Post("/", middlewares.LoginMiddleware(
+		login.Post("/", middlewares.SessionJWTLoginMiddleware(
 			do.MustInvoke[*dbrepository.UserRepository](dinj),
 			do.MustInvoke[*dbrepository.SessionRepository](dinj),
 			do.MustInvoke[*jwtprovide.JWTProvider](dinj).Signer,
@@ -49,7 +49,7 @@ func main() {
 	apiRouter := app.Party("/api")
 
 	apiRouter.UseRouter(
-		middlewares.SessionSecureCookieMiddleware(
+		middlewares.SessionJWTMiddleware(
 			do.MustInvoke[*dbrepository.SessionRepository](dinj),
 			do.MustInvoke[*jwtprovide.JWTProvider](dinj).Verifier,
 		),

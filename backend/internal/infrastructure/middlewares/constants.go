@@ -1,5 +1,7 @@
 package middlewares
 
-const UserIDKey = "user_id"
+const (
+	UserIDKey = "user_id"
 
-const cookieNameForSessionID = "session_id"
+	cookieNameForSessionID = "session_id"
+)

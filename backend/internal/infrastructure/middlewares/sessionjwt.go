@@ -12,75 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CORS(ctx iris.Context) {
-	ctx.Header("Access-Control-Allow-Origin", "http://127.0.0.1:3000")
-	ctx.Header("Access-Control-Allow-Credentials", "true")
-
-	if ctx.Method() == iris.MethodOptions {
-		ctx.Header(
-			"Access-Control-Methods",
-			"POST, PUT, PATCH, DELETE",
-		)
-
-		ctx.Header(
-			"Access-Control-Allow-Headers",
-			"Access-Control-Allow-Origin,Content-Type",
-		)
-
-		ctx.Header("Access-Control-Max-Age", "86400")
-
-		ctx.StatusCode(iris.StatusNoContent)
-		return
-	}
-
-	ctx.Next()
-}
-
-func SessionSecureCookieMiddleware(
-	sessiondb *dbrepository.SessionRepository,
-	verifier *jwt.Verifier,
-) func(ctx iris.Context) {
-	return func(ctx iris.Context) {
-		token := jwt.FromHeader(ctx)
-
-		verifiedToken, err := verifier.VerifyToken([]byte(token))
-		if err != nil {
-			response.SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
-			return
-		}
-
-		var claims sessionClaims
-		if err = verifiedToken.Claims(&claims); err != nil {
-			response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
-			return
-		}
-
-		session, err := sessiondb.Get(ctx, dbrepository.GetSessionPayload{SessionID: claims.SessionID})
-		if err != nil {
-			if errors.Is(err, dbrepository.ErrNotFound) {
-				response.SendErrorResponse(ctx, iris.StatusUnauthorized, "Please, start your session.")
-				return
-			}
-			response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
-			return
-		}
-
-		ctx.Values().Set(UserIDKey, session.UserID)
-
-		ctx.Next()
-	}
-}
-
-type loginRequest struct {
-	Username string `json:"username"`
-	Passwrod string `json:"password"`
-}
-
-type sessionClaims struct {
-	SessionID string `json:"session_id"`
-}
-
-func LoginMiddleware(
+func SessionJWTLoginMiddleware(
 	userRepo *dbrepository.UserRepository,
 	sessionRepo *dbrepository.SessionRepository,
 	signer *jwt.Signer,
@@ -147,5 +79,40 @@ func LoginMiddleware(
 		}
 
 		response.SendOkResponse(ctx, string(token))
+	}
+}
+
+func SessionJWTMiddleware(
+	sessiondb *dbrepository.SessionRepository,
+	verifier *jwt.Verifier,
+) func(ctx iris.Context) {
+	return func(ctx iris.Context) {
+		token := jwt.FromHeader(ctx)
+
+		verifiedToken, err := verifier.VerifyToken([]byte(token))
+		if err != nil {
+			response.SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
+			return
+		}
+
+		var claims sessionClaims
+		if err = verifiedToken.Claims(&claims); err != nil {
+			response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+			return
+		}
+
+		session, err := sessiondb.Get(ctx, dbrepository.GetSessionPayload{SessionID: claims.SessionID})
+		if err != nil {
+			if errors.Is(err, dbrepository.ErrNotFound) {
+				response.SendErrorResponse(ctx, iris.StatusUnauthorized, "Please, start your session.")
+				return
+			}
+			response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+			return
+		}
+
+		ctx.Values().Set(UserIDKey, session.UserID)
+
+		ctx.Next()
 	}
 }
