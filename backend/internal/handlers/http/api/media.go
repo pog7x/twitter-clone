@@ -7,7 +7,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func CreateMediaHandler(ctx iris.Context, mediaRepo dbrepository.MediaRepository) {
+func CreateMediaHandler(ctx iris.Context, mediaRepo *dbrepository.MediaRepository) {
 	maxSize := ctx.Application().ConfigurationReadOnly().GetPostMaxMemory()
 
 	err := ctx.Request().ParseMultipartForm(maxSize)

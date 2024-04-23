@@ -9,3 +9,5 @@ database_url: postgresql://pg:5432/twitter_clone?user=user&password=password
 
 encoded_session_hash_key: wbuNF/yrhZ6JDZw3yX7YZOMT+sk+z+xYf+IRmYJE2oMPgXlmlbYjexo5VKLGbVkZAYdnxxgdP5uu0jgNjPzAfA==
 encoded_session_block_key: OW655QMHxqFIrEMzPtI5Y8ZLpskzdEevudwyLmE/lOg=
+
+jwt_secret_key: secret

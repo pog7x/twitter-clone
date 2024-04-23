@@ -16,11 +16,11 @@ type TweetRepository struct {
 	logger *logrus.Logger
 }
 
-func NewTweetDBRepository(i *do.Injector) (TweetRepository, error) {
+func NewTweetDBRepository(i *do.Injector) (*TweetRepository, error) {
 	database := do.MustInvoke[database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
-	return TweetRepository{
+	return &TweetRepository{
 		db:     database,
 		logger: logger,
 	}, nil
@@ -32,7 +32,7 @@ type CreateTweetPayload struct {
 	Media     []database.Media
 }
 
-func (r TweetRepository) Create(ctx context.Context, payload CreateTweetPayload) (*database.Tweet, error) {
+func (r *TweetRepository) Create(ctx context.Context, payload CreateTweetPayload) (*database.Tweet, error) {
 	tweet := database.Tweet{AuthorID: payload.AuthorID, TweetData: payload.TweetData, TweetMedia: payload.Media}
 
 	result := r.db.WithContext(ctx).Create(&tweet)
@@ -47,7 +47,7 @@ type GetTweetPayload struct {
 	TweetID uint64
 }
 
-func (r TweetRepository) Get(ctx context.Context, payload GetTweetPayload) (*database.Tweet, error) {
+func (r *TweetRepository) Get(ctx context.Context, payload GetTweetPayload) (*database.Tweet, error) {
 	var tweet database.Tweet
 
 	result := r.db.WithContext(ctx).
@@ -69,7 +69,7 @@ type ListTweetPayload struct {
 	Limit, Offset int
 }
 
-func (r TweetRepository) List(ctx context.Context, payload ListTweetPayload) ([]database.Tweet, error) {
+func (r *TweetRepository) List(ctx context.Context, payload ListTweetPayload) ([]database.Tweet, error) {
 	var tweets []database.Tweet
 
 	result := r.db.WithContext(ctx).
@@ -93,7 +93,7 @@ type UpdateTweetPayload struct {
 	Media     []database.Media
 }
 
-func (r TweetRepository) Update(ctx context.Context, tweetID uint64, payload UpdateTweetPayload) (*database.Tweet, error) {
+func (r *TweetRepository) Update(ctx context.Context, tweetID uint64, payload UpdateTweetPayload) (*database.Tweet, error) {
 	tweet := database.Tweet{
 		ID:         tweetID,
 		TweetData:  payload.TweetData,
@@ -112,7 +112,7 @@ func (r TweetRepository) Update(ctx context.Context, tweetID uint64, payload Upd
 	return &tweet, nil
 }
 
-func (r TweetRepository) Delete(ctx context.Context, tweetID uint64) error {
+func (r *TweetRepository) Delete(ctx context.Context, tweetID uint64) error {
 	result := r.db.WithContext(ctx).Delete(&database.Tweet{ID: tweetID})
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

@@ -22,7 +22,7 @@ type User struct {
 	Followers   []User `json:"followers"`
 }
 
-func MeHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
+func MeHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
@@ -42,7 +42,7 @@ func MeHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 	response.SendOkResponse(ctx, userDto(*user))
 }
 
-func UserHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
+func UserHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
@@ -62,7 +62,7 @@ func UserHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 	response.SendOkResponse(ctx, userDto(*user))
 }
 
-func FollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
+func FollowHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
@@ -90,7 +90,7 @@ func FollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 	response.SendOkResponse(ctx, nil)
 }
 
-func UnfollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
+func UnfollowHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())

@@ -15,11 +15,11 @@ type LikeRepository struct {
 	logger *logrus.Logger
 }
 
-func NewLikeDBRepository(i *do.Injector) (LikeRepository, error) {
+func NewLikeDBRepository(i *do.Injector) (*LikeRepository, error) {
 	database := do.MustInvoke[database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
-	return LikeRepository{
+	return &LikeRepository{
 		db:     database,
 		logger: logger,
 	}, nil
@@ -29,7 +29,7 @@ type CreateLikePayload struct {
 	TweetID, UserID uint64
 }
 
-func (r LikeRepository) Create(ctx context.Context, payload CreateLikePayload) (*database.Like, error) {
+func (r *LikeRepository) Create(ctx context.Context, payload CreateLikePayload) (*database.Like, error) {
 	like := database.Like{TweetID: payload.TweetID, UserID: payload.UserID}
 
 	result := r.db.WithContext(ctx).Create(&like)
@@ -44,7 +44,7 @@ type DeleteLikePayload struct {
 	TweetID, UserID uint64
 }
 
-func (r LikeRepository) Delete(ctx context.Context, payload DeleteLikePayload) error {
+func (r *LikeRepository) Delete(ctx context.Context, payload DeleteLikePayload) error {
 	result := r.db.WithContext(ctx).
 		Where("user_id = ? AND tweet_id = ?", payload.UserID, payload.TweetID).
 		Delete(&database.Like{})

@@ -25,6 +25,9 @@ func SendOkResponse(ctx iris.Context, result interface{}) {
 }
 
 func JSON(ctx iris.Context, v interface{}, opts ...iris.JSON) {
+	// ctx.ContentType(irisctx.ContentJSONHeaderValue)
+	// err := irisctx.WriteJSON(ctx, v, &irisctx.DefaultJSONOptions)
+	// err := json.NewEncoder(ctx.ResponseWriter()).Encode(v)
 	err := ctx.JSON(v, opts...)
 	if err != nil {
 		if errHandler := ctx.Application().GetContextErrorHandler(); errHandler != nil {

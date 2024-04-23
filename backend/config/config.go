@@ -19,6 +19,8 @@ type Config struct {
 
 	EncodedSessionHashKey  string `mapstructure:"ENCODED_SESSION_HASH_KEY"`
 	EncodedSessionBlockKey string `mapstructure:"ENCODED_SESSION_BLOCK_KEY"`
+
+	JWTSecretKey string `mapstructure:"JWT_SECRET_KEY"`
 }
 
 var (

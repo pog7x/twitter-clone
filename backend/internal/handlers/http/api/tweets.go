@@ -28,7 +28,7 @@ type CreateTweet struct {
 	TweetMediaIDs []uint64 `json:"tweet_media_ids"`
 }
 
-func CreateTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) {
+func CreateTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
 	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
@@ -57,7 +57,7 @@ func CreateTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository
 	response.SendOkResponse(ctx, iris.Map{"tweet_id": u.ID})
 }
 
-func ListTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) {
+func ListTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
 	tweets, err := tweetRepo.List(ctx, dbrepository.ListTweetPayload{Limit: 100})
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
@@ -73,7 +73,7 @@ func ListTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) 
 	response.SendOkResponse(ctx, tweetsDto)
 }
 
-func DeleteTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) {
+func DeleteTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())

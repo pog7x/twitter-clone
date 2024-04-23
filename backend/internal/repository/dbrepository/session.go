@@ -16,11 +16,11 @@ type SessionRepository struct {
 	logger *logrus.Logger
 }
 
-func NewSessionDBRepository(i *do.Injector) (SessionRepository, error) {
+func NewSessionDBRepository(i *do.Injector) (*SessionRepository, error) {
 	database := do.MustInvoke[database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
-	return SessionRepository{
+	return &SessionRepository{
 		db:     database,
 		logger: logger,
 	}, nil
@@ -32,7 +32,7 @@ type CreateSessionPayload struct {
 	ExpiredAt time.Time
 }
 
-func (r SessionRepository) Create(ctx context.Context, payload CreateSessionPayload) (*database.Session, error) {
+func (r *SessionRepository) Create(ctx context.Context, payload CreateSessionPayload) (*database.Session, error) {
 	session := database.Session{
 		SessionID: payload.SessionID,
 		UserID:    payload.UserID,
@@ -51,7 +51,7 @@ type GetSessionPayload struct {
 	SessionID string
 }
 
-func (r SessionRepository) Get(ctx context.Context, payload GetSessionPayload) (*database.Session, error) {
+func (r *SessionRepository) Get(ctx context.Context, payload GetSessionPayload) (*database.Session, error) {
 	var session database.Session
 
 	result := r.db.WithContext(ctx).
@@ -68,7 +68,7 @@ func (r SessionRepository) Get(ctx context.Context, payload GetSessionPayload) (
 	return &session, nil
 }
 
-func (r SessionRepository) Delete(ctx context.Context, sessionID string) error {
+func (r *SessionRepository) Delete(ctx context.Context, sessionID string) error {
 	result := r.db.WithContext(ctx).Delete(&database.Session{SessionID: sessionID})
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -80,7 +80,7 @@ func (r SessionRepository) Delete(ctx context.Context, sessionID string) error {
 	return nil
 }
 
-func (r SessionRepository) DeleteByUserID(ctx context.Context, userID uint64) error {
+func (r *SessionRepository) DeleteByUserID(ctx context.Context, userID uint64) error {
 	result := r.db.WithContext(ctx).Debug().Where(&database.Session{UserID: userID}).Delete(&database.Session{})
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

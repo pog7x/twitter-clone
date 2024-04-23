@@ -7,13 +7,13 @@ import (
 	"twitter-clone/internal/repository/dbrepository"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/securecookie"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/middleware/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func CORS(ctx iris.Context) {
-	ctx.Header("Access-Control-Allow-Origin", "*")
+	ctx.Header("Access-Control-Allow-Origin", "http://127.0.0.1:3000")
 	ctx.Header("Access-Control-Allow-Credentials", "true")
 
 	if ctx.Method() == iris.MethodOptions {
@@ -37,13 +37,25 @@ func CORS(ctx iris.Context) {
 }
 
 func SessionSecureCookieMiddleware(
-	sessiondb dbrepository.SessionRepository,
-	sc *securecookie.SecureCookie,
+	sessiondb *dbrepository.SessionRepository,
+	verifier *jwt.Verifier,
 ) func(ctx iris.Context) {
 	return func(ctx iris.Context) {
-		sessionID := ctx.GetCookie(cookieNameForSessionID, iris.CookieEncoding(sc))
+		token := jwt.FromHeader(ctx)
 
-		session, err := sessiondb.Get(ctx, dbrepository.GetSessionPayload{SessionID: sessionID})
+		verifiedToken, err := verifier.VerifyToken([]byte(token))
+		if err != nil {
+			response.SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
+			return
+		}
+
+		var claims sessionClaims
+		if err = verifiedToken.Claims(&claims); err != nil {
+			response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+			return
+		}
+
+		session, err := sessiondb.Get(ctx, dbrepository.GetSessionPayload{SessionID: claims.SessionID})
 		if err != nil {
 			if errors.Is(err, dbrepository.ErrNotFound) {
 				response.SendErrorResponse(ctx, iris.StatusUnauthorized, "Please, start your session.")
@@ -64,10 +76,14 @@ type loginRequest struct {
 	Passwrod string `json:"password"`
 }
 
+type sessionClaims struct {
+	SessionID string `json:"session_id"`
+}
+
 func LoginMiddleware(
-	userRepo dbrepository.UserRepository,
-	sessionRepo dbrepository.SessionRepository,
-	sc *securecookie.SecureCookie,
+	userRepo *dbrepository.UserRepository,
+	sessionRepo *dbrepository.SessionRepository,
+	signer *jwt.Signer,
 ) func(ctx iris.Context) {
 	return func(ctx iris.Context) {
 		// Parse request body
@@ -102,21 +118,19 @@ func LoginMiddleware(
 			return
 		}
 
-		// Create new UUID session for user
+		// Create new UUID session_id for user
 		sessionID, err := uuid.NewUUID()
 		if err != nil {
 			response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
 			return
 		}
 
-		// Set response secure cookie header
-		ctx.SetCookie(
-			&iris.Cookie{
-				Name:  cookieNameForSessionID,
-				Value: sessionID.String(),
-			},
-			iris.CookieEncoding(sc),
-		)
+		// Create JWT token for user session
+		token, err := signer.Sign(sessionClaims{SessionID: sessionID.String()})
+		if err != nil {
+			response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+			return
+		}
 
 		//  Save session_id value
 		_, err = sessionRepo.Create(
@@ -132,6 +146,6 @@ func LoginMiddleware(
 			return
 		}
 
-		response.SendOkResponse(ctx, nil)
+		response.SendOkResponse(ctx, string(token))
 	}
 }

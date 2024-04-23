@@ -2,8 +2,8 @@ package di
 
 import (
 	"twitter-clone/config"
-	"twitter-clone/internal/infrastructure/authcookie"
 	"twitter-clone/internal/infrastructure/database"
+	"twitter-clone/internal/infrastructure/jwtprovide"
 	"twitter-clone/internal/repository/dbrepository"
 
 	"github.com/samber/do"
@@ -17,7 +17,8 @@ func NewInjector(logger *logrus.Logger, cfg *config.Config) *do.Injector {
 	do.ProvideValue(injector, logger)
 
 	do.Provide(injector, database.NewDatabase)
-	do.Provide(injector, authcookie.NewCookieCodec)
+	do.Provide(injector, jwtprovide.NewJWTProvider)
+	// do.Provide(injector, authcookie.NewCookieCodec)
 
 	do.Provide(injector, dbrepository.NewUserDBRepository)
 	do.Provide(injector, dbrepository.NewTweetDBRepository)

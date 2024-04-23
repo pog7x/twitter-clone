@@ -16,11 +16,11 @@ type UserRepository struct {
 	logger *logrus.Logger
 }
 
-func NewUserDBRepository(i *do.Injector) (UserRepository, error) {
+func NewUserDBRepository(i *do.Injector) (*UserRepository, error) {
 	database := do.MustInvoke[database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
-	return UserRepository{
+	return &UserRepository{
 		db:     database,
 		logger: logger,
 	}, nil
@@ -32,7 +32,7 @@ type CreateUserPayload struct {
 	Username string
 }
 
-func (r UserRepository) Create(ctx context.Context, payload CreateUserPayload) (*database.User, error) {
+func (r *UserRepository) Create(ctx context.Context, payload CreateUserPayload) (*database.User, error) {
 	user := database.User{Name: payload.Name, Password: payload.Password, Username: payload.Username}
 
 	result := r.db.WithContext(ctx).Create(&user)
@@ -48,7 +48,7 @@ type GetUserPayload struct {
 	Username string
 }
 
-func (r UserRepository) Get(ctx context.Context, payload GetUserPayload) (*database.User, error) {
+func (r *UserRepository) Get(ctx context.Context, payload GetUserPayload) (*database.User, error) {
 	var user database.User
 
 	result := r.db.WithContext(ctx).
@@ -71,7 +71,7 @@ type ListUserPayload struct {
 	Limit, Offset int
 }
 
-func (r UserRepository) List(ctx context.Context, payload ListUserPayload) ([]database.User, error) {
+func (r *UserRepository) List(ctx context.Context, payload ListUserPayload) ([]database.User, error) {
 	var users []database.User
 
 	result := r.db.WithContext(ctx).
@@ -94,7 +94,7 @@ type UpdateUserPayload struct {
 	Followers  []*database.User
 }
 
-func (r UserRepository) Update(ctx context.Context, userID uint64, payload UpdateUserPayload) (*database.User, error) {
+func (r *UserRepository) Update(ctx context.Context, userID uint64, payload UpdateUserPayload) (*database.User, error) {
 	user := database.User{
 		ID:         userID,
 		Name:       payload.Name,
@@ -113,7 +113,7 @@ func (r UserRepository) Update(ctx context.Context, userID uint64, payload Updat
 	return &user, nil
 }
 
-func (r UserRepository) Unfollow(ctx context.Context, followerID, followingID uint64) error {
+func (r *UserRepository) Unfollow(ctx context.Context, followerID, followingID uint64) error {
 	if err := r.db.WithContext(ctx).
 		Model(&database.User{ID: followerID}).
 		Association("Followings").
@@ -129,7 +129,7 @@ func (r UserRepository) Unfollow(ctx context.Context, followerID, followingID ui
 	return nil
 }
 
-func (r UserRepository) Delete(ctx context.Context, userID uint64) error {
+func (r *UserRepository) Delete(ctx context.Context, userID uint64) error {
 	result := r.db.WithContext(ctx).Delete(&database.User{ID: userID})
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

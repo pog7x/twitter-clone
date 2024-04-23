@@ -9,7 +9,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func CreateLikeTweetHandler(ctx iris.Context, likeRepo dbrepository.LikeRepository) {
+func CreateLikeTweetHandler(ctx iris.Context, likeRepo *dbrepository.LikeRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
@@ -31,7 +31,7 @@ func CreateLikeTweetHandler(ctx iris.Context, likeRepo dbrepository.LikeReposito
 	response.SendOkResponse(ctx, nil)
 }
 
-func DeleteLikeTweetHandler(ctx iris.Context, likeRepo dbrepository.LikeRepository) {
+func DeleteLikeTweetHandler(ctx iris.Context, likeRepo *dbrepository.LikeRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())

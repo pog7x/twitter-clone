@@ -13,11 +13,11 @@ type MediaRepository struct {
 	logger *logrus.Logger
 }
 
-func NewMediaDBRepository(i *do.Injector) (MediaRepository, error) {
+func NewMediaDBRepository(i *do.Injector) (*MediaRepository, error) {
 	database := do.MustInvoke[database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
-	return MediaRepository{
+	return &MediaRepository{
 		db:     database,
 		logger: logger,
 	}, nil
@@ -27,7 +27,7 @@ type CreateMediaPayload struct {
 	Link string
 }
 
-func (r MediaRepository) Create(ctx context.Context, payload CreateMediaPayload) (*database.Media, error) {
+func (r *MediaRepository) Create(ctx context.Context, payload CreateMediaPayload) (*database.Media, error) {
 	media := database.Media{Link: payload.Link}
 
 	result := r.db.WithContext(ctx).Create(&media)

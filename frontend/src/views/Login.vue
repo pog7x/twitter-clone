@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { login } from '@/services/api';
+import { login, getMe } from '@/services/api';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
 
 export default {
@@ -39,8 +39,8 @@ export default {
 	data: function () {
 		return {
 			userInfo: {
-				username: 'kaanersoy',
-				password: 'password',
+				username: '',
+				password: '',
 			},
 			validationError: {
 				username: false,
@@ -52,10 +52,14 @@ export default {
 		handleLogin: async function () {
 			try {
 				const response = await login(this.userInfo);
-				if (!response.data.user) {
+				if (!response.data.success) {
 					return;
 				}
-				this.$store.dispatch('setLoginInfo', response.data.user);
+				const meResponse = await getMe(this.userInfo);
+				if (!response.data.success) {
+					return;
+				}
+				this.$store.dispatch('setLoginInfo', meResponse.data.result);
 				return this.$router.push('/');
 			} catch (err) {
 				this.$notification({
