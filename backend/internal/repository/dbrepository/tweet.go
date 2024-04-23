@@ -12,12 +12,12 @@ import (
 )
 
 type TweetRepository struct {
-	db     database.Database
+	db     *database.Database
 	logger *logrus.Logger
 }
 
 func NewTweetDBRepository(i *do.Injector) (*TweetRepository, error) {
-	database := do.MustInvoke[database.Database](i)
+	database := do.MustInvoke[*database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
 	return &TweetRepository{

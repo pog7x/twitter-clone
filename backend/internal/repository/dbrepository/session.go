@@ -12,12 +12,12 @@ import (
 )
 
 type SessionRepository struct {
-	db     database.Database
+	db     *database.Database
 	logger *logrus.Logger
 }
 
 func NewSessionDBRepository(i *do.Injector) (*SessionRepository, error) {
-	database := do.MustInvoke[database.Database](i)
+	database := do.MustInvoke[*database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
 	return &SessionRepository{

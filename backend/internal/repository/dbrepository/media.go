@@ -9,12 +9,12 @@ import (
 )
 
 type MediaRepository struct {
-	db     database.Database
+	db     *database.Database
 	logger *logrus.Logger
 }
 
 func NewMediaDBRepository(i *do.Injector) (*MediaRepository, error) {
-	database := do.MustInvoke[database.Database](i)
+	database := do.MustInvoke[*database.Database](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
 	return &MediaRepository{
