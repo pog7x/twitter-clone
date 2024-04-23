@@ -4,5 +4,4 @@ WORKDIR /backend
 
 COPY . .
 
-
 CMD [ "go", "run", "main.go" ]

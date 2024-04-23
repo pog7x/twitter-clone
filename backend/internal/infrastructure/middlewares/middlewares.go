@@ -36,8 +36,6 @@ func CORS(ctx iris.Context) {
 	ctx.Next()
 }
 
-const cookieNameForSessionID = "session_id"
-
 func SessionSecureCookieMiddleware(
 	sessiondb dbrepository.SessionRepository,
 	sc *securecookie.SecureCookie,
@@ -81,7 +79,7 @@ func LoginMiddleware(
 		}
 
 		// Search user by username from request body
-		user, err := userRepo.GetByUsername(ctx, dbrepository.GetUserByUsernamePayload{Username: login.Username})
+		user, err := userRepo.Get(ctx, dbrepository.GetUserPayload{Username: login.Username})
 		if err != nil {
 			if errors.Is(err, dbrepository.ErrNotFound) {
 				response.SendErrorResponse(ctx, iris.StatusNotFound, err.Error())
@@ -126,7 +124,7 @@ func LoginMiddleware(
 			dbrepository.CreateSessionPayload{
 				SessionID: sessionID.String(),
 				UserID:    user.ID,
-				ExpiredAt: time.Now().Add(time.Hour * 24),
+				ExpiredAt: time.Now().Add(time.Hour * 24), // TODO mb into env config
 			},
 		)
 		if err != nil {

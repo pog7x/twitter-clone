@@ -44,31 +44,19 @@ func (r UserRepository) Create(ctx context.Context, payload CreateUserPayload) (
 }
 
 type GetUserPayload struct {
-	UserID uint64
+	UserID   uint64
+	Username string
 }
 
 func (r UserRepository) Get(ctx context.Context, payload GetUserPayload) (*database.User, error) {
 	var user database.User
 
-	result := r.db.WithContext(ctx).Preload("Followings").Preload("Followers").First(&user, payload.UserID)
-	if err := result.Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrNotFound
-		}
-		return nil, ErrInternal
-	}
-
-	return &user, nil
-}
-
-type GetUserByUsernamePayload struct {
-	Username string
-}
-
-func (r UserRepository) GetByUsername(ctx context.Context, payload GetUserByUsernamePayload) (*database.User, error) {
-	var user = database.User{Username: payload.Username}
-
-	result := r.db.WithContext(ctx).Debug().Preload("Followings").Preload("Followers").Where(&user).First(&user)
+	result := r.db.WithContext(ctx).
+		Debug().
+		Preload("Followings").
+		Preload("Followers").
+		Where(&database.User{ID: payload.UserID, Username: payload.Username}).
+		First(&user)
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrNotFound
@@ -125,7 +113,7 @@ func (r UserRepository) Update(ctx context.Context, userID uint64, payload Updat
 	return &user, nil
 }
 
-func (r UserRepository) Unfollow(ctx context.Context, followerID uint64, followingID uint64) error {
+func (r UserRepository) Unfollow(ctx context.Context, followerID, followingID uint64) error {
 	if err := r.db.WithContext(ctx).
 		Model(&database.User{ID: followerID}).
 		Association("Followings").

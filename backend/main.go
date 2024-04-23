@@ -1,12 +1,11 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 
 	"twitter-clone/config"
 	"twitter-clone/internal/handlers/http/api"
-	"twitter-clone/internal/infrastructure/database"
+	"twitter-clone/internal/infrastructure/di"
 	"twitter-clone/internal/infrastructure/logger"
 	"twitter-clone/internal/infrastructure/middlewares"
 	"twitter-clone/internal/repository/dbrepository"
@@ -22,34 +21,13 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
-	logger, _ := logger.NewLogger(cfg)
-
-	hashKey, err := base64.StdEncoding.DecodeString(cfg.EncodedSessionHashKey)
+	logger, err := logger.NewLogger(cfg)
 	if err != nil {
 		panic(err)
 	}
 
-	blockKey, err := base64.StdEncoding.DecodeString(cfg.EncodedSessionBlockKey)
-	if err != nil {
-		panic(err)
-	}
-
-	sc := securecookie.New(hashKey, blockKey)
-
-	injector := do.NewWithOpts(&do.InjectorOpts{Logf: logger.Debugf})
-
-	do.ProvideValue(injector, cfg)
-	do.ProvideValue(injector, logger)
-
-	do.Provide(injector, database.NewDatabase)
-
-	do.Provide(injector, dbrepository.NewUserDBRepository)
-	do.Provide(injector, dbrepository.NewTweetDBRepository)
-	do.Provide(injector, dbrepository.NewMediaDBRepository)
-	do.Provide(injector, dbrepository.NewLikeDBRepository)
-	do.Provide(injector, dbrepository.NewSessionDBRepository)
-
-	injector.HealthCheck()
+	dinj := di.NewInjector(logger, cfg)
+	defer dinj.Shutdown()
 
 	app := iris.New()
 
@@ -58,14 +36,13 @@ func main() {
 	app.UseRouter(requestid.New())
 	app.UseRouter(recover.New())
 	app.UseRouter(irislog.New())
-
 	app.UseRouter(middlewares.CORS)
 
 	app.PartyFunc("/login", func(login iris.Party) {
 		login.Post("/", middlewares.LoginMiddleware(
-			do.MustInvoke[dbrepository.UserRepository](injector),
-			do.MustInvoke[dbrepository.SessionRepository](injector),
-			sc,
+			do.MustInvoke[dbrepository.UserRepository](dinj),
+			do.MustInvoke[dbrepository.SessionRepository](dinj),
+			do.MustInvoke[*securecookie.SecureCookie](dinj),
 		))
 	})
 
@@ -73,12 +50,13 @@ func main() {
 
 	apiRouter.UseRouter(
 		middlewares.SessionSecureCookieMiddleware(
-			do.MustInvoke[dbrepository.SessionRepository](injector), sc,
+			do.MustInvoke[dbrepository.SessionRepository](dinj),
+			do.MustInvoke[*securecookie.SecureCookie](dinj),
 		),
 	)
 
 	apiRouter.Party("/tweets").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[dbrepository.TweetRepository](injector))
+		r.RegisterDependency(do.MustInvoke[dbrepository.TweetRepository](dinj))
 
 		r.Post("/", api.CreateTweetHandler)
 		r.Get("/", api.ListTweetHandler)
@@ -87,17 +65,17 @@ func main() {
 	})
 
 	apiRouter.Party("/tweets/{id:uint64}/likes/").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[dbrepository.LikeRepository](injector))
+		r.RegisterDependency(do.MustInvoke[dbrepository.LikeRepository](dinj))
 
 		r.Post("/", api.CreateLikeTweetHandler)
 		r.Delete("/", api.DeleteLikeTweetHandler)
 	})
 
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[dbrepository.UserRepository](injector))
+		r.RegisterDependency(do.MustInvoke[dbrepository.UserRepository](dinj))
 
 		// pass, _ := bcrypt.GenerateFromPassword([]byte("sosu_1"), bcrypt.DefaultCost)
-		// do.MustInvoke[dbrepository.UserRepository](injector).Create(context.Background(), dbrepository.CreateUserPayload{
+		// do.MustInvoke[dbrepository.UserRepository](dinj).Create(context.Background(), dbrepository.CreateUserPayload{
 		// 	Name:     "huesos",
 		// 	Password: pass,
 		// 	Username: "hueta",
@@ -111,12 +89,10 @@ func main() {
 	})
 
 	apiRouter.Party("/medias").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[dbrepository.MediaRepository](injector))
+		r.RegisterDependency(do.MustInvoke[dbrepository.MediaRepository](dinj))
 
 		r.Post("/", api.CreateMediaHandler)
 	})
 
 	app.Listen(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), iris.WithOptimizations)
-
-	injector.Shutdown()
 }
