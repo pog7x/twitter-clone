@@ -132,6 +132,6 @@ func LoginMiddleware(
 			return
 		}
 
-		ctx.Next()
+		response.SendOkResponse(ctx, nil)
 	}
 }

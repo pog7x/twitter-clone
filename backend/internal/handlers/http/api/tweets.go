@@ -28,11 +28,6 @@ type CreateTweet struct {
 	TweetMediaIDs []uint64 `json:"tweet_media_ids"`
 }
 
-type TweetResp struct {
-	Result bool    `json:"result"`
-	Tweets []Tweet `json:"tweets"`
-}
-
 func CreateTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) {
 	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
 	if err != nil {
@@ -59,7 +54,7 @@ func CreateTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true, "tweet_id": u.ID})
+	response.SendOkResponse(ctx, iris.Map{"tweet_id": u.ID})
 }
 
 func ListTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) {
@@ -75,7 +70,7 @@ func ListTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) 
 		tweetsDto = append(tweetsDto, tweetDto(tweet))
 	}
 
-	ctx.JSON(TweetResp{Result: true, Tweets: tweetsDto})
+	response.SendOkResponse(ctx, tweetsDto)
 }
 
 func DeleteTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository) {
@@ -95,7 +90,7 @@ func DeleteTweetHandler(ctx iris.Context, tweetRepo dbrepository.TweetRepository
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true})
+	response.SendOkResponse(ctx, nil)
 }
 
 func tweetDto(tweet database.Tweet) Tweet {

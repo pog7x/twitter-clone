@@ -39,5 +39,5 @@ func CreateMediaHandler(ctx iris.Context, mediaRepo dbrepository.MediaRepository
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true, "media_id": media.ID})
+	response.SendOkResponse(ctx, iris.Map{"media_id": media.ID})
 }

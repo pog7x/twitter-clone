@@ -11,15 +11,15 @@ import (
 )
 
 type User struct {
-	ID         uint64 `json:"id"`
-	Name       string `json:"name"`
-	Followings []User `json:"following"`
-	Followers  []User `json:"followers"`
-}
-
-type UserResp struct {
-	Result bool `json:"result"`
-	User   User `json:"user"`
+	ID          uint64 `json:"id"`
+	Username    string `json:"username"`
+	Name        string `json:"name"`
+	Website     string `json:"website"`
+	Description string `json:"description"`
+	Pic         string `json:"pic"`
+	PicCover    string `json:"pic_cover"`
+	Followings  []User `json:"followings"`
+	Followers   []User `json:"followers"`
 }
 
 func MeHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
@@ -39,7 +39,7 @@ func MeHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 		return
 	}
 
-	ctx.JSON(UserResp{Result: true, User: userDto(*user)})
+	response.SendOkResponse(ctx, userDto(*user))
 }
 
 func UserHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
@@ -59,7 +59,7 @@ func UserHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 		return
 	}
 
-	ctx.JSON(UserResp{Result: true, User: userDto(*user)})
+	response.SendOkResponse(ctx, userDto(*user))
 }
 
 func FollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
@@ -87,7 +87,7 @@ func FollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true})
+	response.SendOkResponse(ctx, nil)
 }
 
 func UnfollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
@@ -113,7 +113,7 @@ func UnfollowHandler(ctx iris.Context, userRepo dbrepository.UserRepository) {
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true})
+	response.SendOkResponse(ctx, nil)
 }
 
 func userDto(user database.User) User {
@@ -127,9 +127,14 @@ func userDto(user database.User) User {
 	}
 
 	return User{
-		ID:         user.ID,
-		Name:       user.Name,
-		Followings: followings,
-		Followers:  followers,
+		ID:          user.ID,
+		Name:        user.Name,
+		Username:    user.Username,
+		Website:     user.Website,
+		Description: user.Description,
+		Pic:         user.Pic,
+		PicCover:    user.PicCover,
+		Followings:  followings,
+		Followers:   followers,
 	}
 }

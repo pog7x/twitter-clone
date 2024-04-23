@@ -28,7 +28,7 @@ func CreateLikeTweetHandler(ctx iris.Context, likeRepo dbrepository.LikeReposito
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true})
+	response.SendOkResponse(ctx, nil)
 }
 
 func DeleteLikeTweetHandler(ctx iris.Context, likeRepo dbrepository.LikeRepository) {
@@ -54,5 +54,5 @@ func DeleteLikeTweetHandler(ctx iris.Context, likeRepo dbrepository.LikeReposito
 		return
 	}
 
-	ctx.JSON(iris.Map{"result": true})
+	response.SendOkResponse(ctx, nil)
 }
