@@ -27,13 +27,23 @@ func NewUserDBRepository(i *do.Injector) (*UserRepository, error) {
 }
 
 type CreateUserPayload struct {
-	Name     string
-	Password []byte
-	Username string
+	Name        string
+	Password    []byte
+	Username    string
+	Website     string
+	Pic         string
+	Description string
 }
 
 func (r *UserRepository) Create(ctx context.Context, payload CreateUserPayload) (*database.User, error) {
-	user := database.User{Name: payload.Name, Password: payload.Password, Username: payload.Username}
+	user := database.User{
+		Name:        payload.Name,
+		Password:    payload.Password,
+		Username:    payload.Username,
+		Website:     payload.Website,
+		Pic:         payload.Pic,
+		Description: payload.Description,
+	}
 
 	result := r.db.WithContext(ctx).Create(&user)
 	if err := result.Error; err != nil {

@@ -3,7 +3,7 @@
 		<add-tweet @submit-click="handleTweetSubmit" />
 		<hr class="gap" />
 		<div v-if="tweetData" class="tweet-wrapper">
-			<tweet v-for="tweet in tweetData" :key="tweet.id" :tweet-data="tweet" @delete-tweet="handleTweetDelete" />
+			<tweet v-for="tweet in tweetData" :key="tweet.id" :tweet-data="tweet" @delete-tweet="handleTweetDelete" @get-tweets="getTweets" />
 		</div>
 	</div>
 </template>
@@ -37,13 +37,13 @@ export default {
 			} catch (err) {
 				this.$notification({
 					type: 'error',
-					message: 'Error in send tweet',
+					message: 'Error in get tweet',
 				});
 			}
 		},
-		getTweets: async function () {
-			const response = await getTweets();
-			this.tweetData = response.data.tweets;
+		async getTweets() {
+			const response = await getTweets(this.axios);
+			this.tweetData = response.data.result;
 		},
 		async handleTweetDelete() {
 			this.handleTweetSubmit();

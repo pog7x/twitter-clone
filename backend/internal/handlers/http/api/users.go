@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"time"
 	"twitter-clone/internal/domain/response"
 	"twitter-clone/internal/infrastructure/database"
 	"twitter-clone/internal/infrastructure/middlewares"
@@ -11,15 +12,17 @@ import (
 )
 
 type User struct {
-	ID          uint64 `json:"id"`
-	Username    string `json:"username"`
-	Name        string `json:"name"`
-	Website     string `json:"website"`
-	Description string `json:"description"`
-	Pic         string `json:"pic"`
-	PicCover    string `json:"pic_cover"`
-	Followings  []User `json:"followings"`
-	Followers   []User `json:"followers"`
+	ID          uint64    `json:"id"`
+	Username    string    `json:"username"`
+	Nickname    string    `json:"nickname"`
+	Name        string    `json:"name"`
+	Website     string    `json:"website"`
+	Description string    `json:"description"`
+	Pic         string    `json:"pic"`
+	PicCover    string    `json:"pic_cover"`
+	Followings  []User    `json:"followings"`
+	Followers   []User    `json:"followers"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 func MeHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
@@ -130,11 +133,13 @@ func userDto(user database.User) User {
 		ID:          user.ID,
 		Name:        user.Name,
 		Username:    user.Username,
+		Nickname:    user.Username,
 		Website:     user.Website,
 		Description: user.Description,
 		Pic:         user.Pic,
 		PicCover:    user.PicCover,
 		Followings:  followings,
 		Followers:   followers,
+		CreatedAt:   user.CreatedAt,
 	}
 }

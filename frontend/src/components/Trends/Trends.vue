@@ -34,7 +34,7 @@ export default {
 	},
 	async mounted() {
 		try {
-			const response = await getTrends();
+			const response = await getTrends(this.axios);
 			const trends = response.data.trends;
 			this.trends = trends;
 		} catch (err) {

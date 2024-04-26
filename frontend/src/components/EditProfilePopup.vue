@@ -69,9 +69,9 @@ export default {
 	},
 	created() {
 		this.userData = {
-			name: this.getMe.profile.name,
-			description: this.getMe.profile.description,
-			website: this.getMe.profile.website,
+			name: this.getMe.name,
+			description: this.getMe.description,
+			website: this.getMe.website,
 		};
 	},
 	methods: {

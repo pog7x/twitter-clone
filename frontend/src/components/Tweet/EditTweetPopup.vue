@@ -26,14 +26,14 @@ export default {
 	},
 	props: {
 		tweetId: {
-			type: String,
+			type: Number,
 			default: '',
 		},
 	},
 	methods: {
 		async handleDelete() {
 			try {
-				await deleteTweet({
+				await deleteTweet(this.axios, {
 					tweetId: this.tweetId,
 				});
 				this.$notification({

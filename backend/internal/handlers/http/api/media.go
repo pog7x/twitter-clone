@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"twitter-clone/internal/domain/response"
 	"twitter-clone/internal/repository/dbrepository"
 
@@ -25,9 +26,9 @@ func CreateMediaHandler(ctx iris.Context, mediaRepo *dbrepository.MediaRepositor
 	}
 
 	file := files[0]
-	filePath := "./uploads/" + file.Filename
+	filePath := "/uploads/" + file.Filename
 
-	_, err = ctx.SaveFormFile(file, filePath)
+	_, err = ctx.SaveFormFile(file, fmt.Sprintf(".%s", filePath))
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return

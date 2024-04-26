@@ -2,13 +2,13 @@
 	<div class="sidebar-profile-wrapper">
 		<div class="sidebar-profile" @click="toggleMenu">
 			<div class="sidebar-profile-pic">
-				<img :src="me.profile.pic" />
+				<img :src="me.pic" />
 			</div>
 			<div class="sidebar-profile-items">
 				<div class="profile-info">
-					<p>{{ me.profile.name }}</p>
+					<p>{{ me.name }}</p>
 					<p class="nickname">
-						{{ me.profile.nickname }}
+						{{ me.nickname }}
 					</p>
 				</div>
 				<div class="more">
@@ -19,13 +19,13 @@
 		<div v-if="isMenuOpened" class="sidebar-profile-popup">
 			<div class="popup-header">
 				<div class="sidebar-profile-pic">
-					<img :src="me.profile.pic" />
+					<img :src="me.pic" />
 				</div>
 				<div class="sidebar-profile-items">
 					<div class="profile-info">
-						<p>{{ me.profile.name }}</p>
+						<p>{{ me.name }}</p>
 						<p class="nickname">
-							{{ me.profile.nickname }}
+							{{ me.nickname }}
 						</p>
 					</div>
 					<div class="more">
@@ -41,7 +41,7 @@
 				<hr class="popup-spacing" />
 				<div class="popup-body-item" @click="handleLogOut">
 					<p>
-						Logout from <span>{{ me.profile.nickname }}</span>
+						Logout from <span>{{ me.nickname }}</span>
 					</p>
 				</div>
 			</div>

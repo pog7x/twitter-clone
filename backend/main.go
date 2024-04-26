@@ -31,6 +31,8 @@ func main() {
 
 	app := iris.New()
 
+	app.HandleDir("/uploads", iris.Dir("./uploads"))
+
 	app.Logger().SetLevel(cfg.LogLevel)
 
 	app.UseRouter(requestid.New())
@@ -62,6 +64,7 @@ func main() {
 		r.Get("/", api.ListTweetHandler)
 
 		r.Delete("/{id:uint64}/", api.DeleteTweetHandler)
+		r.Patch("/{id:uint64}/", api.UpdateTweetHandler)
 	})
 
 	apiRouter.Party("/tweets/{id:uint64}/likes/").ConfigureContainer(func(r *iris.APIContainer) {
@@ -79,6 +82,9 @@ func main() {
 		// 	Name:     "huesos",
 		// 	Password: pass,
 		// 	Username: "hueta",
+		// 	Website:  "https://github.com/kaanersoy",
+		// 	Pic:      "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
+		// 	Description: "mraz'",
 		// })
 
 		r.Get("/me/", api.MeHandler)

@@ -74,56 +74,64 @@ import { userOneAuthInfo, users, tweets, trends } from '@/services/mockdata';
 // 	return [200, response];
 // });
 
-export async function login(body) {
-	return request({ type: 'post', path: '/login', body });
+export async function login(http, body) {
+	return request(http, { type: 'post', path: '/login', body });
 }
 
-export async function getTweets() {
-	return request({ type: 'get', path: '/tweets' });
+export async function getTweets(http) {
+	return request(http, { type: 'get', path: '/api/tweets' });
 }
 
-export async function getTrends() {
-	return request({ type: 'get', path: '/trends' });
+export async function getTrends(http) {
+	// return request(http, { type: 'get', path: '/trends' });
+	return { data: { trends: trends } };
 }
 
-export async function getMe(body) {
-	return request({ type: 'post', path: '/api/users/me', body });
+export async function getMe(http, body) {
+	return request(http, { type: 'get', path: '/api/users/me', body });
 }
 
-export async function uploadTweet(body) {
-	return request({ type: 'post', path: '/tweets', body });
+export async function uploadTweet(http, body) {
+	return request(http, { type: 'post', path: '/api/tweets', body });
 }
 
-export async function deleteTweet(body) {
-	return request({ type: 'delete', path: '/tweets', body });
+export async function deleteTweet(http, body) {
+	return request(http, { type: 'delete', path: `/api/tweets/${body.tweetId}`, body });
 }
 
-export async function updateTweet(body) {
-	return request({ type: 'patch', path: '/tweets', body });
+export async function updateTweet(http, body) {
+	return request(http, { type: 'patch', path: `/api/tweets/${body.id}`, body });
 }
 
-export async function getUsersTweets(body) {
-	return request({ type: 'get', path: `/tweets/${body.id}` });
+export async function getUsersTweets(http, body) {
+	return request(http, { type: 'get', path: `/api/tweets/${body.id}` });
 }
 
-export async function setProfileInfo(body) {
-	return request({ type: 'put', path: `/me`, body });
+export async function setProfileInfo(http, body) {
+	return request(http, { type: 'put', path: '/me', body });
 }
 
-const instance = axios.create({
-	baseURL: 'http://0.0.0.0:8080',
-	withCredentials: true,
-});
+export async function uploadMedia(http, body) {
+	return request(http, { type: 'post', path: '/api/medias', body });
+}
 
-async function request(settings) {
+export async function likeTweet(http, tweetId) {
+	return request(http, { type: 'post', path: `/api/tweets/${tweetId}/likes` });
+}
+
+export async function dislikeTweet(http, tweetId) {
+	return request(http, { type: 'delete', path: `/api/tweets/${tweetId}/likes` });
+}
+
+async function request(http, settings) {
 	store.commit('setLoadingStatus', true);
 	try {
 		if (settings.body) {
-			const response = await instance[settings.type](settings.path, settings.body);
+			const response = await http[settings.type](settings.path, settings.body);
 			store.commit('setLoadingStatus', false);
 			return response;
 		}
-		const response = await instance[settings.type](settings.path);
+		const response = await http[settings.type](settings.path);
 		store.commit('setLoadingStatus', false);
 		return response;
 	} catch (err) {
