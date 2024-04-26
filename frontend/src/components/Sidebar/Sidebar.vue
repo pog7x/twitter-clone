@@ -9,7 +9,7 @@
 			<sidebar-item v-for="(route, i) in ROUTES" :key="i" :icon="route.name.toLowerCase()" :to="route.path" :required="route.req">
 				{{ route.name }}
 			</sidebar-item>
-			<sidebar-item icon="profile" :to="`/${me.username}`" required> Profile </sidebar-item>
+			<sidebar-item icon="profile" :to="`/profile/${me.id}`" required> Profile </sidebar-item>
 			<sidebar-item icon="more" @click="toggleMenu">
 				More
 				<more-menu v-if="isMenuOpened" />

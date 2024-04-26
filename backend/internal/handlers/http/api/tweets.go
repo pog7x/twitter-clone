@@ -57,6 +57,32 @@ func CreateTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepositor
 	response.SendOkResponse(ctx, iris.Map{"tweet_id": u.ID})
 }
 
+func UpdateTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
+	id, err := ctx.Params().GetUint64("id")
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+		return
+	}
+
+	var request CreateTweet
+
+	err = ctx.ReadJSON(&request)
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+		return
+	}
+
+	tweet, err := tweetRepo.Update(ctx, id, dbrepository.UpdateTweetPayload{
+		TweetData: request.TweetData,
+	})
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.SendOkResponse(ctx, tweetDto(*tweet))
+}
+
 func ListTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
 	tweets, err := tweetRepo.List(ctx, dbrepository.ListTweetPayload{Limit: 100})
 	if err != nil {
@@ -105,11 +131,17 @@ func tweetDto(tweet database.Tweet) Tweet {
 		links = append(links, media.Link)
 	}
 
-	return Tweet{
-		ID:          tweet.ID,
-		Content:     tweet.TweetData,
-		Author:      User{ID: tweet.Author.ID, Name: tweet.Author.Name},
+	tw := Tweet{
+		ID:      tweet.ID,
+		Content: tweet.TweetData,
+
 		Likes:       likes,
 		Attachments: links,
 	}
+
+	if tweet.Author != nil {
+		tw.Author = userDto(*tweet.Author)
+	}
+
+	return tw
 }

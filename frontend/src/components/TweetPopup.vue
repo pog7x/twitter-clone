@@ -14,6 +14,7 @@
 <script>
 import AddTweet from '@/components/AddTweet.vue';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
+import { getTweets } from '@/services/api';
 
 export default {
 	name: 'TweetPopup',
@@ -22,7 +23,7 @@ export default {
 		BaseIcon,
 	},
 	methods: {
-		handleClickOutside: function (e) {
+		handleClickOutside(e) {
 			const object = {
 				target: e.target,
 				ref: this.$refs.popupWrapper,
@@ -30,9 +31,15 @@ export default {
 			if (object.target !== object.ref) return;
 			this.$store.commit('toggleTweetButton');
 		},
-		handleSubmit() {
+		async handleSubmit() {
 			this.$store.commit('toggleTweetButton');
 			this.$store.commit('setMobileMenuState', false);
+
+			this.emitter.emit('get-tweets', '');
+		},
+		async getTweets() {
+			const response = await getTweets(this.axios);
+			this.tweetData = response.data.result;
 		},
 	},
 };

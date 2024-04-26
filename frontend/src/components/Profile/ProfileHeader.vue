@@ -1,24 +1,27 @@
 <template>
 	<header v-if="me.id">
 		<div class="profile-cover-pic">
-			<img :src="me.profile.pic_cover" />
+			<img :src="me.pic_cover" />
 		</div>
 		<div class="profile-header">
 			<div class="profile-actions">
-				<div class="profile-actions-edit">
+				<div class="profile-actions-image">
+					<img :src="me.pic" />
+				</div>
+				<div v-if="isMe" class="profile-actions-edit">
 					<div class="edit-button" @click="$store.commit('setEditProfileStatus', true)">Edit profile</div>
 				</div>
 			</div>
 			<div class="profile-info">
 				<p class="profile-info-name">
-					{{ me.profile.name }}
+					{{ me.name }}
 				</p>
 				<span class="profile-info-username">
-					{{ me.profile.nickname }}
+					{{ me.nickname }}
 				</span>
 			</div>
 			<div class="profile-description">
-				{{ me.profile.description }}
+				{{ me.description }}
 			</div>
 			<div class="profile-created-at">
 				<span>
@@ -32,11 +35,11 @@
 			</div>
 			<div class="profile-follower-counts">
 				<p>
-					{{ me.account.followings }}
+					{{ me.followings?.length }}
 					<span>Following</span>
 				</p>
 				<p>
-					{{ me.account.followers }}
+					{{ me.followers?.length }}
 					<span>Followers</span>
 				</p>
 			</div>
@@ -62,18 +65,21 @@ export default {
 		}),
 		profileWebsite() {
 			return {
-				website: new URL(new URL(this.me.profile.website)).host,
-				full_website: this.me.profile.website,
+				website: new URL(new URL(this.me.website)).host,
+				full_website: this.me.website,
 			};
 		},
 		joinedAtDate() {
-			return `${moment(this.me.createdAt).format('MMM YYYY')}`;
+			return `${moment(this.me.created_at).format('MMM YYYY')}`;
+		},
+		isMe() {
+			return this.me.id === this.getMyProfileId;
 		},
 	},
 	async mounted() {
 		try {
-			const response = await getMe({ id: this.getMyProfileId });
-			this.$store.commit('setMe', response.data);
+			const response = await getMe(this.axios, { id: this.getMyProfileId });
+			this.$store.commit('setMe', response.data.result);
 			return;
 		} catch (err) {
 			this.$notification({

@@ -1,13 +1,13 @@
 <template>
 	<div class="add-tweet">
 		<div class="add-tweet-profile">
-			<img :src="me.profile.pic" />
+			<img :src="me.pic" />
 		</div>
 		<div class="add-tweet-content">
 			<div class="tweet-section">
-				<textarea v-model="tweetContent.text" placeholder="What's happening?" />
-				<div v-if="tweetContent.imageList" class="tweet-section-images">
-					<div v-for="(image, i) in tweetContent.imageList" :key="i" class="image-container">
+				<textarea v-model="tweetContent.tweet_data" placeholder="What's happening?" />
+				<div v-if="imageList" class="tweet-section-images">
+					<div v-for="(image, i) in imageList" :key="i" class="image-container">
 						<img :src="image.url" />
 						<div class="close-button" @click="deleteImage(i)">
 							<base-icon name="close" />
@@ -45,7 +45,7 @@ import BaseIcon from '@/components/Icons/BaseIcon.vue';
 import { mapGetters } from 'vuex';
 import Tweet from '@/models/Tweet';
 import User from '@/models/User';
-import { uploadTweet } from '@/services/api';
+import { uploadTweet, uploadMedia } from '@/services/api';
 import { useStore } from 'vuex';
 
 export default {
@@ -55,26 +55,39 @@ export default {
 	},
 	setup(props, context) {
 		const tweetContent = ref(defaultTweetContent());
-		const store = useStore();
+
+		const imageList = ref([]);
 
 		const app = getCurrentInstance();
 		const $notification = app.parent.appContext.config.globalProperties.$notification;
 
 		function defaultTweetContent() {
 			return {
-				text: '',
-				imageList: [],
+				tweet_data: '',
+				tweet_media_ids: [],
 			};
 		}
 
 		async function handleSubmit() {
-			const newTweetContent = {
-				text: tweetContent.value.text,
-				photos: tweetContent.value.imageList,
-			};
-			const newTweet = new Tweet(new User(store.getters.getMe), newTweetContent);
 			try {
-				await uploadTweet(newTweet);
+				const mediaIds = [];
+
+				const mediaUploads = imageList.value.map((image) => {
+					const formData = new FormData();
+
+					formData.append('file', image.file);
+
+					return uploadMedia(app.parent.appContext.config.globalProperties.axios, formData);
+				});
+
+				const medias = await Promise.all(mediaUploads);
+
+				medias.forEach(({ data }) => mediaIds.push(data.result.media_id));
+
+				tweetContent.value.tweet_media_ids = mediaIds;
+
+				await uploadTweet(app.parent.appContext.config.globalProperties.axios, tweetContent.value);
+
 				$notification({
 					type: 'info',
 					message: 'Tweet sent!',
@@ -88,24 +101,26 @@ export default {
 
 			context.emit('submit-click');
 			tweetContent.value = defaultTweetContent();
+			imageList.value = [];
 		}
 
 		function hasTweetText() {
-			return tweetContent.value.text.length > 0 && tweetContent.value.text;
+			return tweetContent.value.tweet_data.length > 0 && tweetContent.value.tweet_data;
 		}
 
 		function showFiles(e) {
 			const [file] = e.target.files;
 			const url = URL.createObjectURL(file);
-			tweetContent.value.imageList.push({ url });
+			imageList.value.push({ url, file });
 		}
 
 		function deleteImage(index) {
-			tweetContent.value.imageList.splice(index, 1);
+			imageList.value.splice(index, 1);
 		}
 
 		return {
 			tweetContent,
+			imageList,
 			handleSubmit,
 			hasTweetText,
 			showFiles,
@@ -176,6 +191,7 @@ export default {
 					flex-grow: 1;
 					img {
 						width: 100%;
+						height: 500px;
 					}
 					.close-button {
 						position: absolute;

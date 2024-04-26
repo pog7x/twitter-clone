@@ -8,13 +8,13 @@ func CORS(ctx iris.Context) {
 
 	if ctx.Method() == iris.MethodOptions {
 		ctx.Header(
-			"Access-Control-Methods",
+			"Access-Control-Allow-Methods",
 			"POST, PUT, PATCH, DELETE",
 		)
 
 		ctx.Header(
 			"Access-Control-Allow-Headers",
-			"Access-Control-Allow-Origin,Content-Type",
+			"Access-Control-Allow-Origin,Content-Type,Authorization",
 		)
 
 		ctx.Header("Access-Control-Max-Age", "86400")

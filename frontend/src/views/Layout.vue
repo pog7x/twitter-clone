@@ -13,7 +13,7 @@
 				<template v-if="$route.name == 'Profile'">
 					<div class="profile-info">
 						<h2>
-							{{ getMe.profile.name }}
+							{{ getMe.name }}
 						</h2>
 						<span>{{ getProfileTweetCount }} tweets</span>
 					</div>

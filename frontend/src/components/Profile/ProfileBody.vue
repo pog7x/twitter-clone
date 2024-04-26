@@ -31,19 +31,21 @@ export default {
 		...mapGetters(['getMyProfileId']),
 	},
 	mounted() {
-		this.getTweets();
+		this.getUsersTweets();
 	},
 	methods: {
 		handleTweetDelete() {
-			this.getTweets();
+			this.getUsersTweets();
 		},
-		async getTweets() {
+		async getUsersTweets() {
 			try {
-				const response = await getUsersTweets({
-					id: this.getMyProfileId,
-				});
-				this.userTweets = response.data.tweets;
-				this.$store.commit('setProfileTweetCount', response.data.tweets.length);
+				// const response = await getUsersTweets(this.axios, {
+				// 	id: this.getMyProfileId,
+				// });
+				// this.userTweets = response.data.result;
+				this.userTweets = [];
+				// this.$store.commit('setProfileTweetCount', response.data.result.length);
+				this.$store.commit('setProfileTweetCount', 0);
 			} catch (err) {
 				this.$notification({
 					type: 'error',

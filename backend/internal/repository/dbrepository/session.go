@@ -81,7 +81,7 @@ func (r *SessionRepository) Delete(ctx context.Context, sessionID string) error 
 }
 
 func (r *SessionRepository) DeleteByUserID(ctx context.Context, userID uint64) error {
-	result := r.db.WithContext(ctx).Debug().Where(&database.Session{UserID: userID}).Delete(&database.Session{})
+	result := r.db.WithContext(ctx).Where(&database.Session{UserID: userID}).Delete(&database.Session{})
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrNotFound

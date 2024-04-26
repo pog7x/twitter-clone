@@ -29,6 +29,7 @@
 
 <script>
 import { login, getMe } from '@/services/api';
+import { setCookie } from '@/services/cookies';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
 
 export default {
@@ -49,13 +50,16 @@ export default {
 		};
 	},
 	methods: {
-		handleLogin: async function () {
+		async handleLogin() {
 			try {
-				const response = await login(this.userInfo);
+				const response = await login(this.axios, this.userInfo);
 				if (!response.data.success) {
 					return;
 				}
-				const meResponse = await getMe(this.userInfo);
+				setCookie('access_token', response.data.result);
+				this.axios.defaults.headers['Authorization'] = 'Bearer ' + response.data.result;
+
+				const meResponse = await getMe(this.axios, this.userInfo);
 				if (!response.data.success) {
 					return;
 				}
@@ -68,7 +72,7 @@ export default {
 				});
 			}
 		},
-		validateForm: function () {
+		validateForm() {
 			this.validationError.username = false;
 			this.validationError.password = false;
 			if (this.userInfo.username.length < 5) {

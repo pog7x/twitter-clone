@@ -1,13 +1,15 @@
 <template>
 	<div class="tweet">
 		<div class="tweet-owner">
-			<img src="https://pbs.twimg.com/profile_images/1344794962697793537/GYEm82zC_normal.jpg" />
+			<router-link :to="{ name: 'Profile', params: { profileId: tweetData?.author?.id } }">
+				<img :src="tweetData?.author?.pic" />
+			</router-link>
 		</div>
 		<div class="tweet-content">
 			<div class="tweet-content-header">
 				<p>
-					{{ tweetData.author.profile.name }}
-					<span class="nickname">{{ tweetData.author.profile.nickname }}</span>
+					{{ tweetData.author.name }}
+					<span class="nickname">{{ tweetData.author.nickname }}</span>
 					<span>&#183;</span>
 					<span class="created-at">{{ moment(tweetData.createdAt).fromNow() }}</span>
 				</p>
@@ -19,25 +21,31 @@
 				<div v-if="isTweetEditing" class="tweet-content-edit-tweet">
 					<textarea v-model="editedTweetData" />
 				</div>
-				<div v-if="tweetData.photos.length > 0" class="tweet-content-body-images">
+				<div v-if="tweetData.attachments?.length > 0" class="tweet-content-body-images">
 					<div class="tweet-content-body-images-wrapper">
-						<div v-for="(tweetPhoto, i) in tweetData.photos" :key="i" class="tweet-content-image-item">
-							<img :src="tweetPhoto.url" @click="$store.dispatch('setLightbox', tweetImages)" />
+						<div v-for="(tweetPhoto, i) in tweetData.attachments" :key="i" class="tweet-content-image-item">
+							<img :src="'http://0.0.0.0:8080' + tweetPhoto" @click="$store.dispatch('setLightbox', tweetImages)" />
 						</div>
 					</div>
 				</div>
 			</div>
 			<div v-if="!isTweetEditing" class="tweet-content-actions">
+				<div
+					class="action-item like"
+					:class="{
+						'like--liked': isLikedByUser,
+					}"
+					@click="handleLikeClick"
+				>
+					<base-icon name="like" />
+					<span>{{ tweetData.likes?.length || 0 }}</span>
+				</div>
 				<div class="action-item comment">
 					<base-icon name="comment" />
 					<span>5</span>
 				</div>
 				<div class="action-item retweet">
 					<base-icon name="retweet" />
-					<span>5</span>
-				</div>
-				<div class="action-item like">
-					<base-icon name="like" />
 					<span>5</span>
 				</div>
 				<div class="action-item comment">
@@ -62,7 +70,8 @@
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
 import EditTweetPopup from '@/components/Tweet/EditTweetPopup.vue';
 import moment from 'moment';
-import { updateTweet } from '@/services/api';
+import { updateTweet, likeTweet, dislikeTweet } from '@/services/api';
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'Tweet',
@@ -84,8 +93,14 @@ export default {
 		};
 	},
 	computed: {
+		...mapGetters({
+			me: 'getMe',
+		}),
 		tweetImages() {
-			return this.tweetData.photos.map((photo) => photo.url);
+			return this.tweetData.attachments?.map((photo) => 'http://0.0.0.0:8080' + photo);
+		},
+		isLikedByUser() {
+			return this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)?.length > 0;
 		},
 	},
 	methods: {
@@ -96,10 +111,10 @@ export default {
 		async handleEditTweet() {
 			const request = {
 				id: this.tweetData.id,
-				content: this.editedTweetData,
+				tweet_data: this.editedTweetData,
 			};
 			try {
-				await updateTweet(request);
+				await updateTweet(this.axios, request);
 				this.$notification({
 					type: 'success',
 					message: 'Tweet is edited succesfully!',
@@ -111,6 +126,14 @@ export default {
 				});
 			}
 			this.isTweetEditing = false;
+		},
+		async handleLikeClick() {
+			if (!this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)) {
+				await likeTweet(this.axios, this.tweetData.id);
+			} else {
+				await dislikeTweet(this.axios, this.tweetData.id);
+			}
+			this.$emit('get-tweets');
 		},
 		handleCancelEdit() {
 			this.isTweetEditing = false;
@@ -131,6 +154,14 @@ export default {
 	padding: 1rem;
 	display: flex;
 	transition: 100ms ease background-color;
+	&-owner {
+		min-width: 3rem;
+		min-height: 3rem;
+		max-width: 4rem;
+		max-height: 4rem;
+		width: 100%;
+		border-radius: 999px;
+	}
 	&-edit-button {
 		position: relative;
 		&-icon {
@@ -271,6 +302,16 @@ export default {
 							color: $tweet-action-red;
 						}
 					}
+				}
+			}
+		}
+		.like {
+			&--liked {
+				svg {
+					fill: $tweet-action-red;
+				}
+				span {
+					color: $tweet-action-red;
 				}
 			}
 		}
