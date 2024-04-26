@@ -191,6 +191,7 @@ export default {
 					flex-grow: 1;
 					img {
 						width: 100%;
+						height: 500px;
 					}
 					.close-button {
 						position: absolute;

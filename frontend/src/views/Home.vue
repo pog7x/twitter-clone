@@ -29,6 +29,7 @@ export default {
 	},
 	mounted: async function () {
 		this.getTweets();
+		this.emitter.on('get-tweets', this.getTweets);
 	},
 	methods: {
 		async handleTweetSubmit() {

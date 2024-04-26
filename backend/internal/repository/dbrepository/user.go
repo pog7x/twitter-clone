@@ -62,7 +62,6 @@ func (r *UserRepository) Get(ctx context.Context, payload GetUserPayload) (*data
 	var user database.User
 
 	result := r.db.WithContext(ctx).
-		Debug().
 		Preload("Followings").
 		Preload("Followers").
 		Where(&database.User{ID: payload.UserID, Username: payload.Username}).

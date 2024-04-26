@@ -128,7 +128,6 @@ export default {
 			this.isTweetEditing = false;
 		},
 		async handleLikeClick() {
-			console.log(this.tweetData?.likes);
 			if (!this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)) {
 				await likeTweet(this.axios, this.tweetData.id);
 			} else {

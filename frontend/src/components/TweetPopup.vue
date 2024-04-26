@@ -35,12 +35,7 @@ export default {
 			this.$store.commit('toggleTweetButton');
 			this.$store.commit('setMobileMenuState', false);
 
-			// TODO update tweets list on add via popup
-			// try {
-			// 	await this.getTweets();
-			// } catch (err) {
-			// 	console.log(err);
-			// }
+			this.emitter.emit('get-tweets', '');
 		},
 		async getTweets() {
 			const response = await getTweets(this.axios);
