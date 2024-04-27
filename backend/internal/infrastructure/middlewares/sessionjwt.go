@@ -70,7 +70,7 @@ func SessionJWTLoginMiddleware(
 			dbrepository.CreateSessionPayload{
 				SessionID: sessionID.String(),
 				UserID:    user.ID,
-				ExpiredAt: time.Now().Add(time.Hour * 24), // TODO mb into env config
+				ExpiredAt: time.Now().Add(time.Hour * 24), // TODO mb into env config (service logic)
 			},
 		)
 		if err != nil {

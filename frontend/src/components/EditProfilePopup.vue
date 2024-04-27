@@ -36,8 +36,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'EditProfilePopup',

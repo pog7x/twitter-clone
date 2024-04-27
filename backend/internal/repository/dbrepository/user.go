@@ -32,6 +32,7 @@ type CreateUserPayload struct {
 	Username    string
 	Website     string
 	Pic         string
+	PicCover    string
 	Description string
 }
 
@@ -43,6 +44,7 @@ func (r *UserRepository) Create(ctx context.Context, payload CreateUserPayload) 
 		Website:     payload.Website,
 		Pic:         payload.Pic,
 		Description: payload.Description,
+		PicCover:    payload.PicCover,
 	}
 
 	result := r.db.WithContext(ctx).Create(&user)

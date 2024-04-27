@@ -27,11 +27,11 @@
 </template>
 
 <script>
-import SidebarItem from '@/components/Sidebar/Item.vue';
-import { ROUTES } from '@/components/Sidebar/constants.js';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
-import ProfilePopup from '@/components/Sidebar/ProfilePopup.vue';
+import SidebarItem from '@/components/Sidebar/Item.vue';
 import MoreMenu from '@/components/Sidebar/MoreMenu.vue';
+import ProfilePopup from '@/components/Sidebar/ProfilePopup.vue';
+import { ROUTES } from '@/components/Sidebar/constants.js';
 import { mapGetters } from 'vuex';
 
 export default {

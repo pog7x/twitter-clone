@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import store from '@/store';
-import { instance } from '@/services/http';
 import { getMe } from '@/services/api';
+import { instance } from '@/services/http';
+import store from '@/store';
+import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
 	{

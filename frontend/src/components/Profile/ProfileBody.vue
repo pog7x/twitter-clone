@@ -13,7 +13,6 @@
 </template>
 
 <script>
-import { getUsersTweets } from '@/services/api';
 import Tweet from '@/components/Tweet/Tweet.vue';
 import { mapGetters } from 'vuex';
 
