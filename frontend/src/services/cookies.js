@@ -18,5 +18,3 @@ export function getCookie(name) {
 	}
 	return '';
 }
-
-// export default { setCookie, getCookie };

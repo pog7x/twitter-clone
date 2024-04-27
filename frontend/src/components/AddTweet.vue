@@ -7,10 +7,12 @@
 			<div class="tweet-section">
 				<textarea v-model="tweetContent.tweet_data" placeholder="What's happening?" />
 				<div v-if="imageList" class="tweet-section-images">
-					<div v-for="(image, i) in imageList" :key="i" class="image-container">
-						<img :src="image.url" />
-						<div class="close-button" @click="deleteImage(i)">
-							<base-icon name="close" />
+					<div class="tweet-section-images-wrapper">
+						<div v-for="(image, i) in imageList" :key="i" class="image-container">
+							<img :src="image.url" />
+							<div class="close-button" @click="deleteImage(i)">
+								<base-icon name="close" />
+							</div>
 						</div>
 					</div>
 				</div>
@@ -43,10 +45,7 @@
 import { ref, getCurrentInstance } from 'vue';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
 import { mapGetters } from 'vuex';
-import Tweet from '@/models/Tweet';
-import User from '@/models/User';
 import { uploadTweet, uploadMedia } from '@/services/api';
-import { useStore } from 'vuex';
 
 export default {
 	name: 'AddTweet',
@@ -178,40 +177,47 @@ export default {
 				}
 			}
 			&-images {
-				display: flex;
-				padding: 1rem;
-				.image-container {
-					& + .image-container {
-						margin-left: 15px;
-					}
+				&-wrapper {
+					border-radius: 10px;
+					overflow: hidden;
+					border: $border-light;
 					display: flex;
-					align-items: center;
-					justify-content: center;
-					position: relative;
-					flex-grow: 1;
-					img {
-						width: 100%;
-						height: 500px;
-					}
-					.close-button {
-						position: absolute;
-						background-color: rgba($color: $color-dark-gray, $alpha: 0.3);
-						top: 0;
-						right: 0;
-						cursor: pointer;
-						margin-top: 10px;
-						margin-right: 10px;
-						width: 2rem;
-						height: 2rem;
-						border-radius: 999px;
-						padding: 7px;
-						svg {
+
+					.image-container {
+						& + .image-container {
+							border-left: $border-light;
+						}
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						position: relative;
+						flex-grow: 1;
+						img {
+							vertical-align: middle;
 							width: 100%;
-							height: 100%;
-							fill: #fff;
+						}
+						.close-button {
+							position: absolute;
+							background-color: rgba($color: $color-dark-gray, $alpha: 0.3);
+							top: 0;
+							right: 0;
+							cursor: pointer;
+							margin-top: 10px;
+							margin-right: 10px;
+							width: 2rem;
+							height: 2rem;
+							border-radius: 999px;
+							padding: 7px;
+							svg {
+								width: 100%;
+								height: 100%;
+								fill: #fff;
+							}
 						}
 					}
 				}
+				// display: flex; TODO
+				// padding: 1rem;
 			}
 		}
 		.controls {

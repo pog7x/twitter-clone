@@ -77,14 +77,14 @@ func main() {
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dinj))
 
-		// pass, _ := bcrypt.GenerateFromPassword([]byte("sosu_1"), bcrypt.DefaultCost)
+		// pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
 		// do.MustInvoke[*dbrepository.UserRepository](dinj).Create(context.Background(), dbrepository.CreateUserPayload{
-		// 	Name:     "huesos",
-		// 	Password: pass,
-		// 	Username: "hueta",
-		// 	Website:  "https://github.com/kaanersoy",
-		// 	Pic:      "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
-		// 	Description: "mraz'",
+		// 	Name:        "developer",
+		// 	Password:    pass,
+		// 	Username:    "pog7x",
+		// 	Website:     "https://github.com/pog7x",
+		// 	Pic:         "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
+		// 	Description: "Just a developer that interested in JavaScript.",
 		// })
 
 		r.Get("/me/", api.MeHandler)

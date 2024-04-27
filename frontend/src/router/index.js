@@ -34,8 +34,10 @@ router.beforeEach(async (to, from, next) => {
 			store.commit('setLoginStatus', true);
 			store.commit('setMe', response.data.result);
 			next();
+			return;
 		} catch (err) {
 			next({ path: '/login' });
+			return;
 		}
 	}
 	next();

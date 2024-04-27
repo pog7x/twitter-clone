@@ -23,11 +23,6 @@ const userData = [
 
 export const users = [new User(userData[0])];
 
-export const userOneAuthInfo = {
-	username: userData[0].username,
-	password: userData[0].password,
-};
-
 export const tweets = [];
 
 export const trends = [
