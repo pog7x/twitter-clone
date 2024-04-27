@@ -10,7 +10,7 @@ export async function getTweets(http) {
 }
 
 export async function getTrends(http) {
-	// return request(http, { type: 'get', path: '/trends' });
+	// return request(http, { type: 'get', path: '/trends' }); TODO
 	return { data: { trends: trends } };
 }
 

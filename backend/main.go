@@ -79,10 +79,11 @@ func main() {
 
 		// pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
 		// do.MustInvoke[*dbrepository.UserRepository](dinj).Create(context.Background(), dbrepository.CreateUserPayload{
-		// 	Name:        "developer",
 		// 	Password:    pass,
 		// 	Username:    "pog7x",
+		// 	Name:        "developer",
 		// 	Website:     "https://github.com/pog7x",
+		// 	PicCover:    "https://ideogram.ai/api/images/direct/T91kUQhETeyPyiyqCOfwcQ.png",
 		// 	Pic:         "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
 		// 	Description: "Just a developer that interested in JavaScript.",
 		// })

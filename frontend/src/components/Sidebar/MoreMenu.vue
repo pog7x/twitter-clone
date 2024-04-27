@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import { moreMenuItems } from '@/components/Sidebar/constants.js';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
+import { moreMenuItems } from '@/components/Sidebar/constants.js';
 
 export default {
 	name: 'MoreMenu',

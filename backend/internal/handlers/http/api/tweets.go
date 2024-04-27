@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"time"
 	"twitter-clone/internal/domain/response"
 	"twitter-clone/internal/infrastructure/database"
 	"twitter-clone/internal/infrastructure/middlewares"
@@ -11,11 +12,12 @@ import (
 )
 
 type Tweet struct {
-	ID          uint64   `json:"id"`
-	Content     string   `json:"content"`
-	Attachments []string `json:"attachments"`
-	Author      User     `json:"author"`
-	Likes       []Like   `json:"likes"`
+	ID          uint64    `json:"id"`
+	Content     string    `json:"content"`
+	Attachments []string  `json:"attachments"`
+	Author      User      `json:"author"`
+	Likes       []Like    `json:"likes"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type Like struct {
@@ -132,9 +134,9 @@ func tweetDto(tweet database.Tweet) Tweet {
 	}
 
 	tw := Tweet{
-		ID:      tweet.ID,
-		Content: tweet.TweetData,
-
+		ID:          tweet.ID,
+		Content:     tweet.TweetData,
+		CreatedAt:   tweet.CreatedAt,
 		Likes:       likes,
 		Attachments: links,
 	}

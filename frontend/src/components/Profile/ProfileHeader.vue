@@ -48,10 +48,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import moment from 'moment';
-import { getMe } from '@/services/api';
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
+import { getMe } from '@/services/api';
+import moment from 'moment';
+import { mapGetters } from 'vuex';
 
 export default {
 	name: 'ProfileHeader',

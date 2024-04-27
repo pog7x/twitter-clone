@@ -11,7 +11,7 @@
 					{{ tweetData.author.name }}
 					<span class="nickname">{{ tweetData.author.nickname }}</span>
 					<span>&#183;</span>
-					<span class="created-at">{{ moment(tweetData.createdAt).fromNow() }}</span>
+					<span class="created-at">{{ moment(tweetData.created_at).fromNow() }}</span>
 				</p>
 			</div>
 			<div class="tweet-content-body">

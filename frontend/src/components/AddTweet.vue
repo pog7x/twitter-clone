@@ -195,6 +195,7 @@ export default {
 						img {
 							vertical-align: middle;
 							width: 100%;
+							height: 50rem;
 						}
 						.close-button {
 							position: absolute;
@@ -216,8 +217,6 @@ export default {
 						}
 					}
 				}
-				// display: flex; TODO
-				// padding: 1rem;
 			}
 		}
 		.controls {

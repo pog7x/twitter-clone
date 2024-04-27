@@ -1,5 +1,5 @@
-import { defaultUser } from '@/services/functions';
 import { setProfileInfo } from '@/services/api';
+import { defaultUser } from '@/services/functions';
 
 export default {
 	setLoginInfo({ commit }, payload) {

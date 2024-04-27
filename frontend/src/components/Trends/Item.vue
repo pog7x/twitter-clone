@@ -28,6 +28,7 @@ export default {
 
 <style lang="scss">
 @import 'src/assets/theme/colors.scss';
+
 .trends-item {
 	padding: 1rem;
 	border-top: $border-dark;

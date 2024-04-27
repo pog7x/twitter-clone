@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import 'normalize.css';
-import Layout from '@/views/Layout.vue';
 import Loading from '@/components/Loading.vue';
 import Notification from '@/components/Notification.vue';
+import Layout from '@/views/Layout.vue';
+import 'normalize.css';
 import { mapGetters } from 'vuex';
 
 export default {

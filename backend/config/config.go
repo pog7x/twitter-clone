@@ -26,7 +26,7 @@ type Config struct {
 var (
 	once    sync.Once
 	config  Config
-	cfgFile = ".twitter-clone.dev.yml"
+	cfgFile string
 )
 
 func init() {
