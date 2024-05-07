@@ -2,6 +2,7 @@ package jwtprovide
 
 import (
 	"time"
+
 	"twitter-clone/config"
 
 	"github.com/kataras/iris/v12/middleware/jwt"

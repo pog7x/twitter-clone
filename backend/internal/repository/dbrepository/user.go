@@ -3,6 +3,7 @@ package dbrepository
 import (
 	"context"
 	"errors"
+
 	"twitter-clone/internal/infrastructure/database"
 
 	"github.com/samber/do"
@@ -100,17 +101,21 @@ func (r *UserRepository) List(ctx context.Context, payload ListUserPayload) ([]d
 }
 
 type UpdateUserPayload struct {
-	Name       string
-	Followings []*database.User
-	Followers  []*database.User
+	Name        string
+	Website     string
+	Description string
+	Followings  []*database.User
+	Followers   []*database.User
 }
 
 func (r *UserRepository) Update(ctx context.Context, userID uint64, payload UpdateUserPayload) (*database.User, error) {
 	user := database.User{
-		ID:         userID,
-		Name:       payload.Name,
-		Followings: payload.Followings,
-		Followers:  payload.Followers,
+		ID:          userID,
+		Name:        payload.Name,
+		Website:     payload.Website,
+		Description: payload.Description,
+		Followings:  payload.Followings,
+		Followers:   payload.Followers,
 	}
 
 	result := r.db.WithContext(ctx).Updates(&user)

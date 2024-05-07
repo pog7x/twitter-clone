@@ -1,8 +1,6 @@
 package response
 
-import (
-	"github.com/kataras/iris/v12"
-)
+import "github.com/kataras/iris/v12"
 
 type ErrorResponse struct {
 	Success      bool   `json:"success"`
