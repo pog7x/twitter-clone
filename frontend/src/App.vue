@@ -31,6 +31,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import 'src/assets/theme/colors.scss';
+
 * {
 	box-sizing: border-box;
 	&::before,
@@ -44,7 +46,6 @@ body,
 :root {
 	font-size: 14px;
 }
-@import 'src/assets/theme/colors.scss';
 
 body {
 	background-color: $color-bg;

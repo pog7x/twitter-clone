@@ -47,6 +47,7 @@ export default {
 
 <style lang="scss">
 @import 'src/assets/theme/colors.scss';
+
 a {
 	display: block;
 	text-decoration: none;

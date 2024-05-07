@@ -22,7 +22,7 @@ export default {
 	},
 	editProfileInfo(state, payload) {
 		Object.keys(payload).map((key) => {
-			state.me.profile[key] = payload[key];
+			state.me[key] = payload[key];
 		});
 	},
 	setEditProfileStatus(state, payload) {

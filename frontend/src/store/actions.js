@@ -1,4 +1,3 @@
-import { setProfileInfo } from '@/services/api';
 import { defaultUser } from '@/services/functions';
 
 export default {
@@ -10,14 +9,9 @@ export default {
 		commit('setMe', defaultUser());
 		commit('setLoginStatus', false);
 	},
-	async setMyInfo({ commit }, payload) {
-		try {
-			await setProfileInfo(payload);
-			commit('editProfileInfo', payload);
-			commit('setEditProfileStatus', false);
-		} catch (err) {
-			console.log(err);
-		}
+	setMyInfo({ commit }, payload) {
+		commit('editProfileInfo', payload);
+		commit('setEditProfileStatus', false);
 	},
 	setLightbox({ commit }, payload) {
 		commit('setLightboxState', true);

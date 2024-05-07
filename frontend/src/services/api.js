@@ -107,8 +107,8 @@ export async function getUsersTweets(http, body) {
 	return request(http, { type: 'get', path: `/api/tweets/${body.id}` });
 }
 
-export async function setProfileInfo(http, body) {
-	return request(http, { type: 'put', path: '/me', body });
+export async function updateUser(http, body) {
+	return request(http, { type: 'put', path: '/api/users/me', body });
 }
 
 export async function uploadMedia(http, body) {

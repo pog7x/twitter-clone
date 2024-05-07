@@ -20,15 +20,15 @@
 			<div class="edit-form">
 				<div class="edit-form-item">
 					<label for="name">Name</label>
-					<input id="name" v-model="userData.name" type="text" required />
+					<input id="name" v-model="userData.name" type="text" required @keypress.enter="submitHandler" />
 				</div>
 				<div class="edit-form-item">
 					<label for="description">Description</label>
-					<input id="description" v-model="userData.description" type="text" required />
+					<input id="description" v-model="userData.description" type="text" required @keypress.enter="submitHandler" />
 				</div>
 				<div class="edit-form-item">
 					<label for="website">Website</label>
-					<input id="website" v-model="userData.website" type="url" required />
+					<input id="website" v-model="userData.website" type="url" required @keypress.enter="submitHandler" />
 				</div>
 			</div>
 		</div>
@@ -38,6 +38,7 @@
 <script>
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
 import { mapGetters } from 'vuex';
+import { updateUser } from '@/services/api';
 
 export default {
 	name: 'EditProfilePopup',
@@ -77,7 +78,8 @@ export default {
 	methods: {
 		async submitHandler() {
 			try {
-				await this.$store.dispatch('setMyInfo', { ...this.userData });
+				await updateUser(this.axios, this.userData);
+				this.$store.dispatch('setMyInfo', this.userData);
 			} catch (err) {
 				this.$notification({
 					type: 'error',
