@@ -58,6 +58,7 @@ export default {
 
 <style lang="scss">
 @import 'src/assets/theme/colors.scss';
+
 .profile-body {
 	.sections {
 		border-bottom: $border-dark;

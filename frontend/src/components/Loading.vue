@@ -31,6 +31,7 @@ export default {
 
 <style lang="scss">
 @import 'src/assets/theme/colors.scss';
+
 .loading-screen {
 	position: fixed;
 	top: 0;

@@ -96,6 +96,7 @@ export default {
 
 <style lang="scss">
 @import 'src/assets/theme/colors.scss';
+
 .profile {
 	&-cover-pic {
 		border-bottom: $border-dark;
@@ -112,7 +113,6 @@ export default {
 			height: 130px;
 			margin-top: -80px;
 			img {
-				border: 1px solid $color-dark-gray;
 				border-radius: 999px;
 				width: 100%;
 			}
