@@ -67,6 +67,7 @@ func (r *TweetRepository) Get(ctx context.Context, payload GetTweetPayload) (*da
 
 type ListTweetPayload struct {
 	Limit, Offset int
+	AuthorID      uint64
 }
 
 func (r *TweetRepository) List(ctx context.Context, payload ListTweetPayload) ([]database.Tweet, error) {
@@ -76,6 +77,7 @@ func (r *TweetRepository) List(ctx context.Context, payload ListTweetPayload) ([
 		Joins("Author").
 		Preload("TweetMedia").
 		Preload("Likes").
+		Where(&database.Tweet{AuthorID: payload.AuthorID}).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "id"}, Desc: true}).
 		Limit(payload.Limit).
 		Offset(payload.Offset).

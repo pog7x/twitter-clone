@@ -53,7 +53,7 @@ type Tweet struct {
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }
 
-// Cascade Media soft delete issue
+// Cascade Media and Likes soft delete issue
 func (t *Tweet) AfterDelete(tx *gorm.DB) error {
 	if err := tx.First(&Tweet{ID: t.ID}).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {

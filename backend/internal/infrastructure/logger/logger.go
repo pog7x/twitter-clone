@@ -3,6 +3,7 @@ package logger
 import (
 	"os"
 	"time"
+
 	"twitter-clone/config"
 
 	"github.com/sirupsen/logrus"

@@ -89,6 +89,7 @@ func main() {
 		// })
 
 		r.Get("/me/", api.MeHandler)
+		r.Put("/me/", api.MeUpdateHandler)
 		r.Get("/{id:uint64}/", api.UserHandler)
 
 		r.Post("/{id:uint64}/follow/", api.FollowHandler)

@@ -45,6 +45,48 @@ func MeHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 	response.SendOkResponse(ctx, userDto(*user))
 }
 
+type UpdateMe struct {
+	Name        string `json:"name"`
+	Website     string `json:"website"`
+	Description string `json:"description"`
+}
+
+func MeUpdateHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
+	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+		return
+	}
+
+	var request UpdateMe
+
+	err = ctx.ReadJSON(&request)
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+		return
+	}
+
+	user, err := userRepo.Update(
+		ctx,
+		userID,
+		dbrepository.UpdateUserPayload{
+			Name:        request.Name,
+			Website:     request.Website,
+			Description: request.Description,
+		},
+	)
+	if err != nil {
+		if errors.Is(err, dbrepository.ErrNotFound) {
+			response.SendErrorResponse(ctx, iris.StatusNotFound, err.Error())
+			return
+		}
+		response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+		return
+	}
+
+	response.SendOkResponse(ctx, userDto(*user))
+}
+
 func UserHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
@@ -121,6 +163,7 @@ func UnfollowHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 
 func userDto(user database.User) User {
 	followings, followers := []User{}, []User{}
+
 	for _, following := range user.Followings {
 		followings = append(followings, userDto(*following))
 	}
@@ -138,8 +181,8 @@ func userDto(user database.User) User {
 		Description: user.Description,
 		Pic:         user.Pic,
 		PicCover:    user.PicCover,
+		CreatedAt:   user.CreatedAt,
 		Followings:  followings,
 		Followers:   followers,
-		CreatedAt:   user.CreatedAt,
 	}
 }

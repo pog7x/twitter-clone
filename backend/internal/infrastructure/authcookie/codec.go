@@ -3,6 +3,7 @@ package authcookie
 import (
 	"encoding/base64"
 	"fmt"
+
 	"twitter-clone/config"
 
 	"github.com/gorilla/securecookie"
