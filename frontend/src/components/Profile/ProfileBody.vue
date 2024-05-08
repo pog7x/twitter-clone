@@ -15,6 +15,7 @@
 <script>
 import Tweet from '@/components/Tweet/Tweet.vue';
 import { mapGetters } from 'vuex';
+import { getUsersTweets } from '@/services/api';
 
 export default {
 	name: 'ProfileBody',
@@ -38,14 +39,13 @@ export default {
 		},
 		async getUsersTweets() {
 			try {
-				// const response = await getUsersTweets(this.axios, {
-				// 	id: this.getMyProfileId,
-				// });
-				// this.userTweets = response.data.result;
-				this.userTweets = [];
-				// this.$store.commit('setProfileTweetCount', response.data.result.length);
-				this.$store.commit('setProfileTweetCount', 0);
+				const response = await getUsersTweets(this.axios, {
+					id: this.getMyProfileId,
+				});
+				this.userTweets = response.data.result;
+				this.$store.commit('setProfileTweetCount', response.data.result.length);
 			} catch (err) {
+				console.log(err);
 				this.$notification({
 					type: 'error',
 					message: 'Error when fetching tweets',

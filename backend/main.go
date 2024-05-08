@@ -65,6 +65,8 @@ func main() {
 
 		r.Delete("/{id:uint64}/", api.DeleteTweetHandler)
 		r.Patch("/{id:uint64}/", api.UpdateTweetHandler)
+
+		r.Get("/user/{id:uint64}/", api.UserTweetsHandler)
 	})
 
 	apiRouter.Party("/tweets/{id:uint64}/likes/").ConfigureContainer(func(r *iris.APIContainer) {
