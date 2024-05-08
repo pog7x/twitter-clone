@@ -3,16 +3,28 @@ version: "3.8"
 services:
   frontend:
     build: frontend/
-    volumes:
-      - ./frontend:/frontend
+    environment:
+      - VITE_BASE_API_URL=http://0.0.0.0:8080
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=3000
     ports:
       - 3000:3000
-    user: 1000:1000
 
   backend:
     build: backend/
-    volumes:
-      - ./backend:/backend
+    environment:
+      - DEBUG=false
+      - LOG_LEVEL=info
+
+      - HOST=0.0.0.0
+      - PORT=8080
+
+      - DATABASE_URL=postgresql://pg:5432/twitter_clone?user=user&password=password
+
+      - ENCODED_SESSION_HASH_KEY=wbuNF/yrhZ6JDZw3yX7YZOMT+sk+z+xYf+IRmYJE2oMPgXlmlbYjexo5VKLGbVkZAYdnxxgdP5uu0jgNjPzAfA==
+      - ENCODED_SESSION_BLOCK_KEY=OW655QMHxqFIrEMzPtI5Y8ZLpskzdEevudwyLmE/lOg=
+
+      - JWT_SECRET_KEY=secret
     ports:
       - 8080:8080
     links:

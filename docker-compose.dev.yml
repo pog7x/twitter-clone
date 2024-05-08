@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   frontend:
-    build: frontend/
+    build:
+      dockerfile: ./frontend/Dockerfile.dev
     environment:
       - VITE_BASE_API_URL=http://0.0.0.0:8080
       - VITE_HOST=0.0.0.0
