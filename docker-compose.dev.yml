@@ -3,6 +3,10 @@ version: "3.8"
 services:
   frontend:
     build: frontend/
+    environment:
+      - VITE_BASE_API_URL=http://0.0.0.0:8080
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=3000
     volumes:
       - ./frontend:/frontend
     ports:

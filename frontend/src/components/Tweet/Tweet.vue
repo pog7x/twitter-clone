@@ -22,7 +22,7 @@
 					<textarea v-model="editedTweetData" />
 				</div>
 				<div v-if="tweetData.attachments?.length > 0" class="tweet-content-body-images">
-					<div v-if="(tweetData.attachments?.length || 0) === tweetImages.length" class="tweet-content-body-images-wrapper">
+					<div class="tweet-content-body-images-wrapper">
 						<div v-for="(image, i) in tweetImages" :key="i" class="tweet-content-image-item">
 							<img :src="image" @click="$store.dispatch('setLightbox', { tweetImages: tweetImages, index: i })" />
 						</div>
@@ -87,7 +87,6 @@ export default {
 	},
 	data() {
 		return {
-			tweetImages: [],
 			isEditMenuOpened: false,
 			isTweetEditing: false,
 			editedTweetData: this.tweetData.content,
@@ -100,9 +99,9 @@ export default {
 		isLikedByUser() {
 			return this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)?.length > 0;
 		},
-	},
-	mounted() {
-		this.loadImages();
+		tweetImages() {
+			return this.tweetData.attachments?.map((image) => this.baseUrl + image);
+		},
 	},
 	methods: {
 		moment,
