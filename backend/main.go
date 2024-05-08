@@ -104,5 +104,11 @@ func main() {
 		r.Post("/", api.CreateMediaHandler)
 	})
 
+	apiRouter.Party("/trends").ConfigureContainer(func(r *iris.APIContainer) {
+		r.RegisterDependency(do.MustInvoke[*dbrepository.TrendRepository](dinj))
+
+		r.Get("/", api.ListTrendHandler)
+	})
+
 	app.Listen(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), iris.WithOptimizations)
 }

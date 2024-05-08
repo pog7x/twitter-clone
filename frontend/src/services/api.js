@@ -1,6 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import store from '@/store';
+<<<<<<< HEAD
 import { userOneAuthInfo, users, tweets, trends } from '@/services/mockdata';
 
 // const mock = new MockAdapter(axios, { delayResponse: 250 });
@@ -73,6 +74,8 @@ import { userOneAuthInfo, users, tweets, trends } from '@/services/mockdata';
 // 	};
 // 	return [200, response];
 // });
+=======
+>>>>>>> 9877f1c... keep trends in db
 
 export async function login(http, body) {
 	return request(http, { type: 'post', path: '/login', body });
@@ -119,8 +122,7 @@ export async function uploadMedia(http, body) {
 }
 
 export async function getTrends(http) {
-	// return request(http, { type: 'get', path: '/trends' }); TODO
-	return { data: { trends: trends } };
+	return request(http, { type: 'get', path: '/api/trends' });
 }
 
 async function request(http, settings) {
