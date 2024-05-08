@@ -35,10 +35,14 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+		index: {
+			type: Number,
+			default: () => 0,
+		},
 	},
 	data() {
 		return {
-			currentImage: 0,
+			currentImage: this.index,
 		};
 	},
 	computed: {

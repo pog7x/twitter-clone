@@ -37,6 +37,9 @@ export default {
 	setLightboxImages(state, payload) {
 		state.lightbox.images = payload;
 	},
+	setLightboxIndex(state, index) {
+		state.lightbox.index = index;
+	},
 	setMobileMenuState(state, payload) {
 		state.isMobileMenuActive = payload;
 	},
