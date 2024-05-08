@@ -102,6 +102,28 @@ func ListTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository)
 	response.SendOkResponse(ctx, tweetsDto)
 }
 
+func UserTweetsHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
+	id, err := ctx.Params().GetUint64("id")
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+		return
+	}
+
+	tweets, err := tweetRepo.List(ctx, dbrepository.ListTweetPayload{Limit: 100, AuthorID: id})
+	if err != nil {
+		response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var tweetsDto []Tweet
+
+	for _, tweet := range tweets {
+		tweetsDto = append(tweetsDto, tweetDto(tweet))
+	}
+
+	response.SendOkResponse(ctx, tweetsDto)
+}
+
 func DeleteTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
 	id, err := ctx.Params().GetUint64("id")
 	if err != nil {
