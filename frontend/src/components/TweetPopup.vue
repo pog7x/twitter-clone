@@ -82,7 +82,8 @@ export default {
 	&-wrapper {
 		margin-top: 50px;
 		border-radius: 1rem;
-		min-width: 450px;
+		max-width: 450px;
+		max-height: 50rem;
 		background-color: $color-bg;
 	}
 }

@@ -182,7 +182,6 @@ export default {
 					overflow: hidden;
 					border: $border-light;
 					display: flex;
-
 					.image-container {
 						& + .image-container {
 							border-left: $border-light;
@@ -195,7 +194,6 @@ export default {
 						img {
 							vertical-align: middle;
 							width: 100%;
-							height: 50rem;
 						}
 						.close-button {
 							position: absolute;
