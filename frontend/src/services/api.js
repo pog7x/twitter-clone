@@ -1,5 +1,4 @@
 import store from '@/store';
-import { trends } from '@/services/mockdata';
 
 export async function login(http, body) {
 	return request(http, { type: 'post', path: '/login', body });
@@ -46,8 +45,7 @@ export async function uploadMedia(http, body) {
 }
 
 export async function getTrends(http) {
-	// return request(http, { type: 'get', path: '/trends' }); TODO
-	return { data: { trends: trends } };
+	return request(http, { type: 'get', path: '/api/trends' });
 }
 
 async function request(http, settings) {

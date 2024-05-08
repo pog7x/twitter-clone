@@ -16,7 +16,7 @@ export default {
 	},
 	computed: {
 		normalizedTweetCount() {
-			const stringNumber = this.data.tweetsCount.toString();
+			const stringNumber = this.data.tweets_count.toString();
 			if (stringNumber.length > 4) {
 				return stringNumber.substring(0, stringNumber.length - 3) + 'K';
 			}

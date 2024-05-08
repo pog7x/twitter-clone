@@ -25,6 +25,7 @@ func NewInjector(logger *logrus.Logger, cfg *config.Config) *do.Injector {
 	do.Provide(injector, dbrepository.NewMediaDBRepository)
 	do.Provide(injector, dbrepository.NewLikeDBRepository)
 	do.Provide(injector, dbrepository.NewSessionDBRepository)
+	do.Provide(injector, dbrepository.NewTrendDBRepository)
 
 	injector.HealthCheck()
 

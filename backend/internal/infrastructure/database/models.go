@@ -13,6 +13,7 @@ var allModels = []any{
 	new(Media),
 	new(Like),
 	new(Session),
+	new(Trend),
 }
 
 type User struct {
@@ -87,4 +88,13 @@ type Like struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+type Trend struct {
+	ID         uint64 `gorm:"primaryKey"`
+	Name       string
+	TweetCount uint64
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt `gorm:"index"`
 }

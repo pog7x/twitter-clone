@@ -43,7 +43,7 @@ export default {
 					id: this.getMyProfileId,
 				});
 				this.userTweets = response.data.result;
-				this.$store.commit('setProfileTweetCount', response.data.result.length);
+				this.$store.commit('setProfileTweetCount', response.data.result?.length || 0);
 			} catch (err) {
 				console.log(err);
 				this.$notification({

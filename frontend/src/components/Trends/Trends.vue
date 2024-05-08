@@ -28,15 +28,14 @@ export default {
 	computed: {
 		sortedTrends() {
 			const trendsArray = this.trends;
-			trendsArray.sort((a, b) => (a.tweetsCount > b.tweetsCount ? -1 : 1), 0);
+			trendsArray.sort((a, b) => (a.tweets_count > b.tweets_count ? -1 : 1), 0);
 			return trendsArray;
 		},
 	},
 	async mounted() {
 		try {
 			const response = await getTrends(this.axios);
-			const trends = response.data.trends;
-			this.trends = trends;
+			this.trends = response.data.result;
 		} catch (err) {
 			this.$notification({
 				type: 'error',
