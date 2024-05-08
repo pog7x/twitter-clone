@@ -22,9 +22,9 @@
 					<textarea v-model="editedTweetData" />
 				</div>
 				<div v-if="tweetData.attachments?.length > 0" class="tweet-content-body-images">
-					<div class="tweet-content-body-images-wrapper">
-						<div v-for="(tweetPhoto, i) in tweetData.attachments" :key="i" class="tweet-content-image-item">
-							<img :src="'http://0.0.0.0:8080' + tweetPhoto" @click="$store.dispatch('setLightbox', tweetImages)" />
+					<div v-if="(tweetData.attachments?.length || 0) === tweetImages.length" class="tweet-content-body-images-wrapper">
+						<div v-for="(image, i) in tweetImages" :key="i" class="tweet-content-image-item">
+							<img :src="image" @click="$store.dispatch('setLightbox', { tweetImages: tweetImages, index: i })" />
 						</div>
 					</div>
 				</div>
@@ -70,7 +70,7 @@
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
 import EditTweetPopup from '@/components/Tweet/EditTweetPopup.vue';
 import moment from 'moment';
-import { updateTweet, likeTweet, dislikeTweet } from '@/services/api';
+import { updateTweet, likeTweet, dislikeTweet, fetchImage } from '@/services/api';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -87,6 +87,7 @@ export default {
 	},
 	data() {
 		return {
+			tweetImages: [],
 			isEditMenuOpened: false,
 			isTweetEditing: false,
 			editedTweetData: this.tweetData.content,
@@ -96,15 +97,20 @@ export default {
 		...mapGetters({
 			me: 'getMe',
 		}),
-		tweetImages() {
-			return this.tweetData.attachments?.map((photo) => 'http://0.0.0.0:8080' + photo);
-		},
 		isLikedByUser() {
 			return this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)?.length > 0;
 		},
 	},
+	mounted() {
+		this.loadImages();
+	},
 	methods: {
 		moment,
+		async loadImages() {
+			this.tweetData.attachments.forEach(async (url) => {
+				this.tweetImages.push(await fetchImage(this.axios, url));
+			});
+		},
 		handleDelete() {
 			this.$emit('delete-tweet');
 		},

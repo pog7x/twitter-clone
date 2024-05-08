@@ -31,7 +31,7 @@
 			</div>
 		</div>
 		<tweet-popup v-if="getTweetPopupState" />
-		<Lightbox v-if="getLightboxState.state" :images="getLightboxState.images" />
+		<Lightbox v-if="getLightboxState.state" :images="getLightboxState.images" :index="getLightboxState.index" />
 		<div class="mobile-menu-toggler" @click="$store.commit('setMobileMenuState', !getMobileMenuState)">
 			<base-icon name="hamburger" />
 		</div>
