@@ -77,6 +77,13 @@ import { userOneAuthInfo, users, tweets, trends } from '@/services/mockdata';
 =======
 >>>>>>> 9877f1c... keep trends in db
 
+export function fetchImage(http, url) {
+	return http.get(url, { responseType: 'arraybuffer' }).then((response) => {
+		let image = btoa(new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+		return `data:${response.headers['content-type'].toLowerCase()};base64,${image}`;
+	});
+}
+
 export async function login(http, body) {
 	return request(http, { type: 'post', path: '/login', body });
 }

@@ -15,10 +15,12 @@ export default {
 	},
 	setLightbox({ commit }, payload) {
 		commit('setLightboxState', true);
-		commit('setLightboxImages', payload);
+		commit('setLightboxImages', payload.tweetImages);
+		commit('setLightboxIndex', payload.index);
 	},
 	closeLightbox({ commit }) {
 		commit('setLightboxState', false);
 		commit('setLightboxImages', []);
+		commit('setLightboxIndex', 0);
 	},
 };
