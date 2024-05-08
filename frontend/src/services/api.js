@@ -82,15 +82,6 @@ export async function getTweets(http) {
 	return request(http, { type: 'get', path: '/api/tweets' });
 }
 
-export async function getTrends(http) {
-	// return request(http, { type: 'get', path: '/trends' }); TODO
-	return { data: { trends: trends } };
-}
-
-export async function getMe(http, body) {
-	return request(http, { type: 'get', path: '/api/users/me', body });
-}
-
 export async function uploadTweet(http, body) {
 	return request(http, { type: 'post', path: '/api/tweets', body });
 }
@@ -103,8 +94,20 @@ export async function updateTweet(http, body) {
 	return request(http, { type: 'patch', path: `/api/tweets/${body.id}`, body });
 }
 
+export async function likeTweet(http, tweetId) {
+	return request(http, { type: 'post', path: `/api/tweets/${tweetId}/likes` });
+}
+
+export async function dislikeTweet(http, tweetId) {
+	return request(http, { type: 'delete', path: `/api/tweets/${tweetId}/likes` });
+}
+
 export async function getUsersTweets(http, body) {
-	return request(http, { type: 'get', path: `/api/tweets/${body.id}` });
+	return request(http, { type: 'get', path: `/api/tweets/user/${body.id}` });
+}
+
+export async function getMe(http, body) {
+	return request(http, { type: 'get', path: '/api/users/me', body });
 }
 
 export async function updateUser(http, body) {
@@ -115,12 +118,9 @@ export async function uploadMedia(http, body) {
 	return request(http, { type: 'post', path: '/api/medias', body });
 }
 
-export async function likeTweet(http, tweetId) {
-	return request(http, { type: 'post', path: `/api/tweets/${tweetId}/likes` });
-}
-
-export async function dislikeTweet(http, tweetId) {
-	return request(http, { type: 'delete', path: `/api/tweets/${tweetId}/likes` });
+export async function getTrends(http) {
+	// return request(http, { type: 'get', path: '/trends' }); TODO
+	return { data: { trends: trends } };
 }
 
 async function request(http, settings) {
