@@ -17,6 +17,8 @@ type Config struct {
 
 	DatabaseURL string `mapstructure:"DATABASE_URL"`
 
+	UploadsDirPath string `mapstructure:"UPLOADS_DIR_PATH"`
+
 	EncodedSessionHashKey  string `mapstructure:"ENCODED_SESSION_HASH_KEY"`
 	EncodedSessionBlockKey string `mapstructure:"ENCODED_SESSION_BLOCK_KEY"`
 

@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"io/fs"
+	"os"
 
 	"twitter-clone/config"
 	"twitter-clone/internal/handlers/http/api"
@@ -26,12 +28,18 @@ func main() {
 		panic(err)
 	}
 
+	if _, err := os.Stat(cfg.UploadsDirPath); os.IsNotExist(err) {
+		if err = os.Mkdir(cfg.UploadsDirPath, fs.ModePerm); err != nil {
+			panic(err)
+		}
+	}
+
 	dinj := di.NewInjector(logger, cfg)
 	defer dinj.Shutdown()
 
 	app := iris.New()
 
-	app.HandleDir("/uploads", iris.Dir("./uploads"))
+	app.HandleDir(cfg.UploadsDirPath, iris.Dir(cfg.UploadsDirPath))
 
 	app.Logger().SetLevel(cfg.LogLevel)
 
