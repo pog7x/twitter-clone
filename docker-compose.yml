@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  frontend:
+  frontend_prod:
     build: frontend/
     environment:
       - VITE_BASE_API_URL=http://0.0.0.0:8080
@@ -10,7 +10,7 @@ services:
     ports:
       - 3000:3000
 
-  backend:
+  backend_prod:
     build: backend/
     environment:
       - DEBUG=false

@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  frontend:
+  frontend_dev:
     build:
       dockerfile: ./frontend/Dockerfile.dev
     environment:
@@ -14,7 +14,7 @@ services:
       - 3000:3000
     user: 1000:1000
 
-  backend:
+  backend_dev:
     build:
       dockerfile: ./backend/Dockerfile.dev
     environment:
