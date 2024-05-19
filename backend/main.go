@@ -87,7 +87,7 @@ func main() {
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dinj))
 
-		// pass, _ := bcrypt.GenerateFromPassword([]byte("sosu_1"), bcrypt.DefaultCost)
+		// pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
 		// do.MustInvoke[*dbrepository.UserRepository](dinj).Create(context.Background(), dbrepository.CreateUserPayload{
 		// 	Password:    pass,
 		// 	Username:    "pog7x",
