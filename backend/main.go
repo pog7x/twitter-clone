@@ -14,7 +14,7 @@ import (
 	"twitter-clone/internal/repository/dbrepository"
 
 	"github.com/kataras/iris/v12"
-	irislog "github.com/kataras/iris/v12/middleware/logger"
+	irisLog "github.com/kataras/iris/v12/middleware/logger"
 	"github.com/kataras/iris/v12/middleware/recover"
 	"github.com/kataras/iris/v12/middleware/requestid"
 
@@ -23,7 +23,7 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
-	logger, err := logger.NewLogger(cfg)
+	log, err := logger.NewLogger(cfg)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ func main() {
 		}
 	}
 
-	dinj := di.NewInjector(logger, cfg)
+	dinj := di.NewInjector(log, cfg)
 	defer dinj.Shutdown()
 
 	app := iris.New()
@@ -45,7 +45,7 @@ func main() {
 
 	app.UseRouter(requestid.New())
 	app.UseRouter(recover.New())
-	app.UseRouter(irislog.New())
+	app.UseRouter(irisLog.New())
 	app.UseRouter(middlewares.CORS)
 
 	app.PartyFunc("/login", func(login iris.Party) {
