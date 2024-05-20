@@ -37,8 +37,8 @@ func main() {
 		}
 	}
 
-	dInj := di.NewInjector(log, cfg)
-	defer dInj.Shutdown()
+	dInj, shutdown := di.NewInjector(log, cfg)
+	defer shutdown(dInj, log)
 
 	app := iris.New()
 

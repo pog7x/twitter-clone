@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func NewInjector(logger *logrus.Logger, cfg *config.Config) *do.Injector {
+func NewInjector(logger *logrus.Logger, cfg *config.Config) (*do.Injector, func(*do.Injector, *logrus.Logger)) {
 	injector := do.NewWithOpts(&do.InjectorOpts{Logf: logger.Debugf})
 
 	do.ProvideValue(injector, cfg)
@@ -29,5 +29,9 @@ func NewInjector(logger *logrus.Logger, cfg *config.Config) *do.Injector {
 
 	injector.HealthCheck()
 
-	return injector
+	return injector, func(i *do.Injector, l *logrus.Logger) {
+		if err := i.Shutdown(); err != nil {
+			l.WithError(err).Error("Dependencies injector shutdown error.")
+		}
+	}
 }
