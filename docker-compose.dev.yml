@@ -1,9 +1,9 @@
-version: "2.1"
+version: "3.8"
 
 services:
   frontend_dev:
     build:
-      context: ./frontend
+      context: frontend
       dockerfile: Dockerfile.dev
     environment:
       - VITE_BASE_API_URL=http://0.0.0.0:8080
@@ -17,7 +17,7 @@ services:
 
   backend_dev:
     build:
-      context: ./backend
+      context: backend
       dockerfile: Dockerfile.dev
     environment:
       - DEBUG=true
