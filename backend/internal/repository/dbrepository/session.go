@@ -18,12 +18,9 @@ type SessionRepository struct {
 }
 
 func NewSessionDBRepository(i *do.Injector) (*SessionRepository, error) {
-	database := do.MustInvoke[*database.Database](i)
-	logger := do.MustInvoke[*logrus.Logger](i)
-
 	return &SessionRepository{
-		db:     database,
-		logger: logger,
+		db:     do.MustInvoke[*database.Database](i),
+		logger: do.MustInvoke[*logrus.Logger](i),
 	}, nil
 }
 

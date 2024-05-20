@@ -15,12 +15,9 @@ type MediaRepository struct {
 }
 
 func NewMediaDBRepository(i *do.Injector) (*MediaRepository, error) {
-	database := do.MustInvoke[*database.Database](i)
-	logger := do.MustInvoke[*logrus.Logger](i)
-
 	return &MediaRepository{
-		db:     database,
-		logger: logger,
+		db:     do.MustInvoke[*database.Database](i),
+		logger: do.MustInvoke[*logrus.Logger](i),
 	}, nil
 }
 

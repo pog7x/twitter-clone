@@ -17,12 +17,9 @@ type LikeRepository struct {
 }
 
 func NewLikeDBRepository(i *do.Injector) (*LikeRepository, error) {
-	database := do.MustInvoke[*database.Database](i)
-	logger := do.MustInvoke[*logrus.Logger](i)
-
 	return &LikeRepository{
-		db:     database,
-		logger: logger,
+		db:     do.MustInvoke[*database.Database](i),
+		logger: do.MustInvoke[*logrus.Logger](i),
 	}, nil
 }
 

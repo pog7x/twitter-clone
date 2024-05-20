@@ -3,6 +3,7 @@ package dbrepository
 import (
 	"context"
 	"errors"
+
 	"twitter-clone/internal/infrastructure/database"
 
 	"github.com/samber/do"
@@ -17,12 +18,9 @@ type TweetRepository struct {
 }
 
 func NewTweetDBRepository(i *do.Injector) (*TweetRepository, error) {
-	database := do.MustInvoke[*database.Database](i)
-	logger := do.MustInvoke[*logrus.Logger](i)
-
 	return &TweetRepository{
-		db:     database,
-		logger: logger,
+		db:     do.MustInvoke[*database.Database](i),
+		logger: do.MustInvoke[*logrus.Logger](i),
 	}, nil
 }
 

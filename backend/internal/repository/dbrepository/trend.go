@@ -16,12 +16,9 @@ type TrendRepository struct {
 }
 
 func NewTrendDBRepository(i *do.Injector) (*TrendRepository, error) {
-	database := do.MustInvoke[*database.Database](i)
-	logger := do.MustInvoke[*logrus.Logger](i)
-
 	return &TrendRepository{
-		db:     database,
-		logger: logger,
+		db:     do.MustInvoke[*database.Database](i),
+		logger: do.MustInvoke[*logrus.Logger](i),
 	}, nil
 }
 

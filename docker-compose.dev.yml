@@ -1,9 +1,10 @@
-version: "3.8"
+version: "2.1"
 
 services:
   frontend_dev:
     build:
-      dockerfile: ./frontend/Dockerfile.dev
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     environment:
       - VITE_BASE_API_URL=http://0.0.0.0:8080
       - VITE_HOST=0.0.0.0
@@ -11,12 +12,13 @@ services:
     volumes:
       - ./frontend:/frontend
     ports:
-      - 3000:3000
+      - "3000:3000"
     user: 1000:1000
 
   backend_dev:
     build:
-      dockerfile: ./backend/Dockerfile.dev
+      context: ./backend
+      dockerfile: Dockerfile.dev
     environment:
       - DEBUG=true
       - LOG_LEVEL=info
@@ -35,7 +37,7 @@ services:
     volumes:
       - ./backend:/backend
     ports:
-      - 8080:8080
+      - "8080:8080"
     links:
       - pg
     depends_on:
@@ -50,7 +52,7 @@ services:
       - POSTGRES_PASSWORD=password
       - PGDATA=/var/lib/postgresql/data/pgdata
     ports:
-      - 5432:5432
+      - "5432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U user -d twitter_clone" ]
       interval: 5s

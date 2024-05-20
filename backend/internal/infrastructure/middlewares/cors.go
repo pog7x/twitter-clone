@@ -3,7 +3,7 @@ package middlewares
 import "github.com/kataras/iris/v12"
 
 func CORS(ctx iris.Context) {
-	ctx.Header("Access-Control-Allow-Origin", "http://127.0.0.1:3000")
+	ctx.Header("Access-Control-Allow-Origin", "http://0.0.0.0:3000")
 	ctx.Header("Access-Control-Allow-Credentials", "true")
 
 	if ctx.Method() == iris.MethodOptions {

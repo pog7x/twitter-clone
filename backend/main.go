@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/fs"
 	"os"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"twitter-clone/config"
 	"twitter-clone/internal/handlers/http/api"
@@ -87,16 +90,16 @@ func main() {
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dInj))
 
-		// pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
-		// do.MustInvoke[*dbrepository.UserRepository](dInj).Create(context.Background(), dbrepository.CreateUserPayload{
-		// 	Password:    pass,
-		// 	Username:    "pog7x",
-		// 	Name:        "developer",
-		// 	Website:     "https://github.com/pog7x",
-		// 	PicCover:    "https://ideogram.ai/api/images/direct/T91kUQhETeyPyiyqCOfwcQ.png",
-		// 	Pic:         "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
-		// 	Description: "Just a developer that interested in JavaScript.",
-		// })
+		pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
+		do.MustInvoke[*dbrepository.UserRepository](dInj).Create(context.Background(), dbrepository.CreateUserPayload{
+			Password:    pass,
+			Username:    "pog7x",
+			Name:        "developer",
+			Website:     "https://github.com/pog7x",
+			PicCover:    "https://ideogram.ai/api/images/direct/T91kUQhETeyPyiyqCOfwcQ.png",
+			Pic:         "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
+			Description: "Just a developer that interested in JavaScript.",
+		})
 
 		r.Get("/me/", api.MeHandler)
 		r.Put("/me/", api.MeUpdateHandler)
