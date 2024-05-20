@@ -31,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	if _, err := os.Stat(cfg.UploadsDirPath); os.IsNotExist(err) {
+	if _, err = os.Stat(cfg.UploadsDirPath); os.IsNotExist(err) {
 		if err = os.Mkdir(cfg.UploadsDirPath, fs.ModePerm); err != nil {
 			panic(err)
 		}

@@ -1,5 +1,4 @@
 FROM golang:1.22.2
 RUN go install github.com/cespare/reflex@latest
 WORKDIR /backend
-COPY . .
-CMD reflex -r '(\.go$|go\.mod)' -s go run main.go
+CMD reflex -v -r '(\.go$|go\.mod)' -s go run main.go
