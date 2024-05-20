@@ -34,8 +34,8 @@ func main() {
 		}
 	}
 
-	dinj := di.NewInjector(log, cfg)
-	defer dinj.Shutdown()
+	dInj := di.NewInjector(log, cfg)
+	defer dInj.Shutdown()
 
 	app := iris.New()
 
@@ -50,9 +50,9 @@ func main() {
 
 	app.PartyFunc("/login", func(login iris.Party) {
 		login.Post("/", middlewares.SessionJWTLoginMiddleware(
-			do.MustInvoke[*dbrepository.UserRepository](dinj),
-			do.MustInvoke[*dbrepository.SessionRepository](dinj),
-			do.MustInvoke[*jwtprovide.JWTProvider](dinj).Signer,
+			do.MustInvoke[*dbrepository.UserRepository](dInj),
+			do.MustInvoke[*dbrepository.SessionRepository](dInj),
+			do.MustInvoke[*jwtprovide.JWTProvider](dInj).Signer,
 		))
 	})
 
@@ -60,13 +60,13 @@ func main() {
 
 	apiRouter.UseRouter(
 		middlewares.SessionJWTMiddleware(
-			do.MustInvoke[*dbrepository.SessionRepository](dinj),
-			do.MustInvoke[*jwtprovide.JWTProvider](dinj).Verifier,
+			do.MustInvoke[*dbrepository.SessionRepository](dInj),
+			do.MustInvoke[*jwtprovide.JWTProvider](dInj).Verifier,
 		),
 	)
 
 	apiRouter.Party("/tweets").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[*dbrepository.TweetRepository](dinj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.TweetRepository](dInj))
 
 		r.Post("/", api.CreateTweetHandler)
 		r.Get("/", api.ListTweetHandler)
@@ -78,17 +78,17 @@ func main() {
 	})
 
 	apiRouter.Party("/tweets/{id:uint64}/likes/").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[*dbrepository.LikeRepository](dinj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.LikeRepository](dInj))
 
 		r.Post("/", api.CreateLikeTweetHandler)
 		r.Delete("/", api.DeleteLikeTweetHandler)
 	})
 
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dinj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dInj))
 
 		// pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
-		// do.MustInvoke[*dbrepository.UserRepository](dinj).Create(context.Background(), dbrepository.CreateUserPayload{
+		// do.MustInvoke[*dbrepository.UserRepository](dInj).Create(context.Background(), dbrepository.CreateUserPayload{
 		// 	Password:    pass,
 		// 	Username:    "pog7x",
 		// 	Name:        "developer",
@@ -107,13 +107,13 @@ func main() {
 	})
 
 	apiRouter.Party("/medias").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[*dbrepository.MediaRepository](dinj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.MediaRepository](dInj))
 
 		r.Post("/", api.CreateMediaHandler)
 	})
 
 	apiRouter.Party("/trends").ConfigureContainer(func(r *iris.APIContainer) {
-		r.RegisterDependency(do.MustInvoke[*dbrepository.TrendRepository](dinj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.TrendRepository](dInj))
 
 		r.Get("/", api.ListTrendHandler)
 	})
