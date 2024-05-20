@@ -2,7 +2,7 @@ package middlewares
 
 type loginRequest struct {
 	Username string `json:"username"`
-	Passwrod string `json:"password"`
+	Password string `json:"password"`
 }
 
 type sessionClaims struct {

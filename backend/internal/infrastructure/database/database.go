@@ -17,13 +17,15 @@ func NewDatabase(i *do.Injector) (*Database, error) {
 	cfg := do.MustInvoke[*config.Config](i)
 	logger := do.MustInvoke[*logrus.Logger](i)
 
-	db, err := gorm.Open(postgres.Open(cfg.DatabaseURL), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(cfg.DatabaseURL))
 	if err != nil {
 		logger.WithError(err).Errorf("Create database connection error")
 		return nil, err
 	}
 
-	db.AutoMigrate(allModels...)
+	if err = db.AutoMigrate(allModels...); err != nil {
+		return nil, err
+	}
 
 	return &Database{db}, nil
 }

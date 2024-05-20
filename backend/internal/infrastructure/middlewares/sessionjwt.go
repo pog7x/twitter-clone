@@ -3,6 +3,7 @@ package middlewares
 import (
 	"errors"
 	"time"
+
 	"twitter-clone/internal/domain/response"
 
 	"twitter-clone/internal/repository/dbrepository"
@@ -39,7 +40,7 @@ func SessionJWTLoginMiddleware(
 		}
 
 		// Validate password from request body
-		if err = bcrypt.CompareHashAndPassword(user.Password, []byte(login.Passwrod)); err != nil {
+		if err = bcrypt.CompareHashAndPassword(user.Password, []byte(login.Password)); err != nil {
 			response.SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
 			return
 		}
