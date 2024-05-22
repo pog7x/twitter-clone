@@ -19,6 +19,8 @@ services:
 
       - UPLOADS_DIR_PATH=/uploads/
 
+      - SESSION_EXPIRED_AT=24h
+
       - ENCODED_SESSION_HASH_KEY=wbuNF/yrhZ6JDZw3yX7YZOMT+sk+z+xYf+IRmYJE2oMPgXlmlbYjexo5VKLGbVkZAYdnxxgdP5uu0jgNjPzAfA==
       - ENCODED_SESSION_BLOCK_KEY=OW655QMHxqFIrEMzPtI5Y8ZLpskzdEevudwyLmE/lOg=
 

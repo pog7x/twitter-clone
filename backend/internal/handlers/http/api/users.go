@@ -3,9 +3,10 @@ package api
 import (
 	"errors"
 	"time"
+
 	"twitter-clone/internal/domain/response"
+	"twitter-clone/internal/infrastructure/auth"
 	"twitter-clone/internal/infrastructure/database"
-	"twitter-clone/internal/infrastructure/middlewares"
 	"twitter-clone/internal/repository/dbrepository"
 
 	"github.com/kataras/iris/v12"
@@ -26,7 +27,7 @@ type User struct {
 }
 
 func MeHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return
@@ -52,7 +53,7 @@ type UpdateMe struct {
 }
 
 func MeUpdateHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return
@@ -114,7 +115,7 @@ func FollowHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 		return
 	}
 
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return
@@ -142,7 +143,7 @@ func UnfollowHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 		return
 	}
 
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return
@@ -162,7 +163,10 @@ func UnfollowHandler(ctx iris.Context, userRepo *dbrepository.UserRepository) {
 }
 
 func userDto(user database.User) User {
-	followings, followers := []User{}, []User{}
+	var (
+		followings []User
+		followers  []User
+	)
 
 	for _, following := range user.Followings {
 		followings = append(followings, userDto(*following))

@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"twitter-clone/internal/domain/response"
-	"twitter-clone/internal/infrastructure/middlewares"
+	"twitter-clone/internal/infrastructure/auth"
 	"twitter-clone/internal/repository/dbrepository"
 
 	"github.com/kataras/iris/v12"
@@ -17,7 +17,7 @@ func CreateLikeTweetHandler(ctx iris.Context, likeRepo *dbrepository.LikeReposit
 		return
 	}
 
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return
@@ -39,7 +39,7 @@ func DeleteLikeTweetHandler(ctx iris.Context, likeRepo *dbrepository.LikeReposit
 		return
 	}
 
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return

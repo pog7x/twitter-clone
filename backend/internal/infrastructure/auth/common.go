@@ -1,4 +1,4 @@
-package middlewares
+package auth
 
 type loginRequest struct {
 	Username string `json:"username"`

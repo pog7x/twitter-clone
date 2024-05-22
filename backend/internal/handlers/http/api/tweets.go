@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"twitter-clone/internal/domain/response"
+	"twitter-clone/internal/infrastructure/auth"
 	"twitter-clone/internal/infrastructure/database"
-	"twitter-clone/internal/infrastructure/middlewares"
 	"twitter-clone/internal/repository/dbrepository"
 
 	"github.com/kataras/iris/v12"
@@ -32,7 +32,7 @@ type CreateTweet struct {
 }
 
 func CreateTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepository) {
-	userID, err := ctx.Values().GetUint64(middlewares.UserIDKey)
+	userID, err := ctx.Values().GetUint64(auth.UserIDKey)
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
 		return
@@ -145,8 +145,10 @@ func DeleteTweetHandler(ctx iris.Context, tweetRepo *dbrepository.TweetRepositor
 }
 
 func tweetDto(tweet database.Tweet) Tweet {
-	var likes []Like
-	var links []string
+	var (
+		likes []Like
+		links []string
+	)
 
 	for _, like := range tweet.Likes {
 		likes = append(likes, Like{UserID: like.UserID, Name: like.User.Name})

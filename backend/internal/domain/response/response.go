@@ -1,6 +1,10 @@
 package response
 
-import "github.com/kataras/iris/v12"
+import (
+	"github.com/kataras/iris/v12"
+
+	"twitter-clone/internal/services"
+)
 
 type ErrorResponse struct {
 	Success      bool   `json:"success"`
@@ -33,6 +37,21 @@ func JSON(ctx iris.Context, v interface{}, opts ...iris.JSON) {
 		} else {
 			ctx.Application().Logger().Error(err)
 			ctx.StatusCode(iris.StatusInternalServerError)
+		}
+	}
+}
+
+func HandleServiceError(ctx iris.Context, err error) {
+	if err != nil {
+		switch err.(type) {
+		case services.NotFoundServiceError:
+			SendErrorResponse(ctx, iris.StatusNotFound, err.Error())
+		case services.NotPermittedError:
+			SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
+		case services.InternalServiceError:
+			SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+		default:
+			SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
 		}
 	}
 }

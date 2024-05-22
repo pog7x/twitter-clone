@@ -1,4 +1,4 @@
-package middlewares
+package corsheaders
 
 import "github.com/kataras/iris/v12"
 

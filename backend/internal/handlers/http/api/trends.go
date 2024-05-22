@@ -40,5 +40,4 @@ func trendDto(trend database.Trend) Trend {
 		TweetsCount: trend.TweetCount,
 		CreatedAt:   trend.CreatedAt,
 	}
-
 }

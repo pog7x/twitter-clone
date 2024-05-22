@@ -10,11 +10,13 @@ import (
 
 	"twitter-clone/config"
 	"twitter-clone/internal/handlers/http/api"
+	"twitter-clone/internal/infrastructure/auth"
+	"twitter-clone/internal/infrastructure/corsheaders"
 	"twitter-clone/internal/infrastructure/di"
 	"twitter-clone/internal/infrastructure/jwtprovide"
 	"twitter-clone/internal/infrastructure/logger"
-	"twitter-clone/internal/infrastructure/middlewares"
 	"twitter-clone/internal/repository/dbrepository"
+	"twitter-clone/internal/services/authservice"
 
 	"github.com/kataras/iris/v12"
 	irisLog "github.com/kataras/iris/v12/middleware/logger"
@@ -49,12 +51,11 @@ func main() {
 	app.UseRouter(requestid.New())
 	app.UseRouter(recover.New())
 	app.UseRouter(irisLog.New())
-	app.UseRouter(middlewares.CORS)
+	app.UseRouter(corsheaders.CORS)
 
 	app.PartyFunc("/login", func(login iris.Party) {
-		login.Post("/", middlewares.SessionJWTLoginMiddleware(
-			do.MustInvoke[*dbrepository.UserRepository](dInj),
-			do.MustInvoke[*dbrepository.SessionRepository](dInj),
+		login.Post("/", auth.SessionJWTLoginHandler(
+			do.MustInvoke[*authservice.AuthService](dInj),
 			do.MustInvoke[*jwtprovide.JWTProvider](dInj).Signer,
 		))
 	})
@@ -62,8 +63,8 @@ func main() {
 	apiRouter := app.Party("/api")
 
 	apiRouter.UseRouter(
-		middlewares.SessionJWTMiddleware(
-			do.MustInvoke[*dbrepository.SessionRepository](dInj),
+		auth.SessionJWTMiddleware(
+			do.MustInvoke[*authservice.AuthService](dInj),
 			do.MustInvoke[*jwtprovide.JWTProvider](dInj).Verifier,
 		),
 	)
