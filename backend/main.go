@@ -6,7 +6,10 @@ import (
 	"io/fs"
 	"os"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/kataras/iris/v12"
+	irisLog "github.com/kataras/iris/v12/middleware/logger"
+	"github.com/kataras/iris/v12/middleware/recover"
+	"github.com/kataras/iris/v12/middleware/requestid"
 
 	"twitter-clone/config"
 	"twitter-clone/internal/handlers/http/api"
@@ -17,11 +20,7 @@ import (
 	"twitter-clone/internal/infrastructure/logger"
 	"twitter-clone/internal/repository/dbrepository"
 	"twitter-clone/internal/services/authservice"
-
-	"github.com/kataras/iris/v12"
-	irisLog "github.com/kataras/iris/v12/middleware/logger"
-	"github.com/kataras/iris/v12/middleware/recover"
-	"github.com/kataras/iris/v12/middleware/requestid"
+	"twitter-clone/internal/services/fixtures"
 
 	"github.com/samber/do"
 )
@@ -91,17 +90,6 @@ func main() {
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dInj))
 
-		pass, _ := bcrypt.GenerateFromPassword([]byte("pass123"), bcrypt.DefaultCost)
-		do.MustInvoke[*dbrepository.UserRepository](dInj).Create(context.Background(), dbrepository.CreateUserPayload{
-			Password:    pass,
-			Username:    "pog7x",
-			Name:        "developer",
-			Website:     "https://github.com/pog7x",
-			PicCover:    "https://ideogram.ai/api/images/direct/T91kUQhETeyPyiyqCOfwcQ.png",
-			Pic:         "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
-			Description: "Just a developer that interested in JavaScript.",
-		})
-
 		r.Get("/me/", api.MeHandler)
 		r.Put("/me/", api.MeUpdateHandler)
 		r.Get("/{id:uint64}/", api.UserHandler)
@@ -121,6 +109,9 @@ func main() {
 
 		r.Get("/", api.ListTrendHandler)
 	})
+
+	do.MustInvoke[*fixtures.Service](dInj).CreateTrends(context.Background())
+	do.MustInvoke[*fixtures.Service](dInj).CreateUsers(context.Background())
 
 	app.Listen(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), iris.WithOptimizations)
 }

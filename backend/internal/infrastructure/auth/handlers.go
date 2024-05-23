@@ -19,6 +19,7 @@ func SessionJWTLoginHandler(authService *authservice.AuthService, signer *jwt.Si
 			return
 		}
 
+		// Call auth service method
 		session, err := authService.AuthLogin(ctx, authservice.LoginPayload{
 			Username: login.Username,
 			Password: login.Password,
@@ -49,6 +50,7 @@ func SessionSecureCookieLoginHandler(authService *authservice.AuthService, sc *s
 			return
 		}
 
+		// Call auth service method
 		session, err := authService.AuthLogin(ctx, authservice.LoginPayload{
 			Username: login.Username,
 			Password: login.Password,

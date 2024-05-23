@@ -18,7 +18,9 @@ type Trend struct {
 }
 
 func ListTrendHandler(ctx iris.Context, trendRepo *dbrepository.TrendRepository) {
-	trends, err := trendRepo.List(ctx)
+	trends, err := trendRepo.List(ctx, dbrepository.ListTrendPayload{
+		Limit: 100,
+	})
 	if err != nil {
 		response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
 		return

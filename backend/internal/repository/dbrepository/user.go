@@ -25,6 +25,7 @@ func NewUserDBRepository(i *do.Injector) (*UserRepository, error) {
 }
 
 type CreateUserPayload struct {
+	ID          uint64
 	Name        string
 	Password    []byte
 	Username    string
@@ -36,6 +37,7 @@ type CreateUserPayload struct {
 
 func (r *UserRepository) Create(ctx context.Context, payload CreateUserPayload) (*database.User, error) {
 	user := database.User{
+		ID:          payload.ID,
 		Name:        payload.Name,
 		Password:    payload.Password,
 		Username:    payload.Username,
@@ -78,18 +80,24 @@ func (r *UserRepository) Get(ctx context.Context, payload GetUserPayload) (*data
 
 type ListUserPayload struct {
 	Limit, Offset int
+	Username      string
 }
 
 func (r *UserRepository) List(ctx context.Context, payload ListUserPayload) ([]database.User, error) {
 	var users []database.User
 
-	result := r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Preload("Followings").
 		Preload("Followers").
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "id"}, Desc: true}).
 		Limit(payload.Limit).
-		Offset(payload.Offset).
-		Find(&users)
+		Offset(payload.Offset)
+
+	if payload.Username != "" {
+		query = query.Where(&database.User{Username: payload.Username})
+	}
+
+	result := query.Find(&users)
 	if err := result.Error; err != nil {
 		return nil, ErrInternal
 	}

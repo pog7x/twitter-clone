@@ -22,12 +22,45 @@ func NewTrendDBRepository(i *do.Injector) (*TrendRepository, error) {
 	}, nil
 }
 
-func (r *TrendRepository) List(ctx context.Context) ([]database.Trend, error) {
+type CreateTrendPayload struct {
+	ID         uint64
+	Name       string
+	TweetCount uint64
+}
+
+func (r *TrendRepository) Create(ctx context.Context, payload CreateTrendPayload) (*database.Trend, error) {
+	trend := database.Trend{
+		ID:         payload.ID,
+		Name:       payload.Name,
+		TweetCount: payload.TweetCount,
+	}
+
+	result := r.db.WithContext(ctx).Create(&trend)
+	if err := result.Error; err != nil {
+		return nil, ErrInternal
+	}
+
+	return &trend, nil
+}
+
+type ListTrendPayload struct {
+	Limit, Offset int
+	Name          string
+}
+
+func (r *TrendRepository) List(ctx context.Context, payload ListTrendPayload) ([]database.Trend, error) {
 	var trends []database.Trend
 
-	result := r.db.WithContext(ctx).
+	query := r.db.WithContext(ctx).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "id"}, Desc: true}).
-		Find(&trends)
+		Limit(payload.Limit).
+		Offset(payload.Offset)
+
+	if payload.Name != "" {
+		query = query.Where(&database.Trend{Name: payload.Name})
+	}
+
+	result := query.Find(&trends)
 	if err := result.Error; err != nil {
 		return nil, ErrInternal
 	}

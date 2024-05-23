@@ -1,15 +1,16 @@
 package di
 
 import (
+	"github.com/samber/do"
+	"github.com/sirupsen/logrus"
+
 	"twitter-clone/config"
 	"twitter-clone/internal/infrastructure/authcookie"
 	"twitter-clone/internal/infrastructure/database"
 	"twitter-clone/internal/infrastructure/jwtprovide"
 	"twitter-clone/internal/repository/dbrepository"
 	"twitter-clone/internal/services/authservice"
-
-	"github.com/samber/do"
-	"github.com/sirupsen/logrus"
+	"twitter-clone/internal/services/fixtures"
 )
 
 func NewInjector(logger *logrus.Logger, cfg *config.Config) (*do.Injector, func(*do.Injector, *logrus.Logger)) {
@@ -18,12 +19,12 @@ func NewInjector(logger *logrus.Logger, cfg *config.Config) (*do.Injector, func(
 	do.ProvideValue(injector, cfg)
 	do.ProvideValue(injector, logger)
 
-	// infrastructure
+	// Infrastructure
 	do.Provide(injector, database.NewDatabase)
 	do.Provide(injector, jwtprovide.NewJWTProvider)
 	do.Provide(injector, authcookie.NewCookieCodec)
 
-	// repositories
+	// Repositories
 	do.Provide(injector, dbrepository.NewUserDBRepository)
 	do.Provide(injector, dbrepository.NewTweetDBRepository)
 	do.Provide(injector, dbrepository.NewMediaDBRepository)
@@ -31,8 +32,10 @@ func NewInjector(logger *logrus.Logger, cfg *config.Config) (*do.Injector, func(
 	do.Provide(injector, dbrepository.NewSessionDBRepository)
 	do.Provide(injector, dbrepository.NewTrendDBRepository)
 
-	// services
+	// Services
 	do.Provide(injector, authservice.NewAuthService)
+
+	do.Provide(injector, fixtures.NewFixturesService)
 
 	injector.HealthCheck()
 
