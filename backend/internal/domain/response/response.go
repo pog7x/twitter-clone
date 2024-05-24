@@ -19,14 +19,14 @@ type OkResponse struct {
 
 func SendErrorResponse(ctx iris.Context, code int, ErrorMessage string) {
 	ctx.StopWithStatus(code)
-	JSON(ctx, ErrorResponse{ErrorType: iris.StatusText(code), ErrorMessage: ErrorMessage})
+	_json(ctx, ErrorResponse{ErrorType: iris.StatusText(code), ErrorMessage: ErrorMessage})
 }
 
 func SendOkResponse(ctx iris.Context, result interface{}) {
-	JSON(ctx, OkResponse{Success: true, Result: result})
+	_json(ctx, OkResponse{Success: true, Result: result})
 }
 
-func JSON(ctx iris.Context, v interface{}, opts ...iris.JSON) {
+func _json(ctx iris.Context, v interface{}, opts ...iris.JSON) {
 	// ctx.ContentType(irisctx.ContentJSONHeaderValue)
 	// err := irisctx.WriteJSON(ctx, v, &irisctx.DefaultJSONOptions)
 	// err := json.NewEncoder(ctx.ResponseWriter()).Encode(v)
@@ -47,7 +47,7 @@ func HandleServiceError(ctx iris.Context, err error) {
 		case services.NotFoundServiceError:
 			SendErrorResponse(ctx, iris.StatusNotFound, err.Error())
 		case services.NotPermittedError:
-			SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
+			SendErrorResponse(ctx, iris.StatusForbidden, err.Error())
 		case services.InternalServiceError:
 			SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
 		default:

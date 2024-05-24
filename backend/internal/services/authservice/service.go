@@ -41,7 +41,7 @@ type LoginPayload struct {
 }
 
 func (s *AuthService) AuthLogin(ctx context.Context, login LoginPayload) (*database.Session, error) {
-	// Search user by username from request body
+	// Search user by username from payload
 	user, err := s.userRepo.Get(ctx, dbrepository.GetUserPayload{Username: login.Username})
 	if err != nil {
 		if errors.Is(err, dbrepository.ErrNotFound) {
