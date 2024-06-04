@@ -9,7 +9,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/samber/do v1.6.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/spf13/viper v1.18.2
+	github.com/spf13/viper v1.19.0
 	golang.org/x/crypto v0.23.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.10
@@ -48,7 +48,7 @@ require (
 	github.com/mailgun/raymond/v2 v2.0.48 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
-	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
+	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
