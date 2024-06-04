@@ -23,6 +23,6 @@
 		"sass": "^1.32.13",
 		"sass-loader": "^14",
 		"vite": "^5.2.0",
-		"vite-plugin-require": "^1.1.14"
+		"vite-plugin-require": "^1.2.14"
 	}
 }
