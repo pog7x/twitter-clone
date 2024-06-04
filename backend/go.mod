@@ -3,7 +3,7 @@ module twitter-clone
 go 1.22.2
 
 require (
-	github.com/google/uuid v1.5.0
+	github.com/google/uuid v1.6.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/kataras/iris/v12 v12.2.10
 	github.com/mitchellh/mapstructure v1.5.0
