@@ -19,7 +19,7 @@
 		"vuex": "^4"
 	},
 	"devDependencies": {
-		"@vitejs/plugin-vue": "^5.0.4",
+		"@vitejs/plugin-vue": "^5.0.5",
 		"sass": "^1.32.13",
 		"sass-loader": "^10",
 		"vite": "^5.2.0",
