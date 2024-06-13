@@ -2,7 +2,7 @@
 	<div
 		ref="popupWrapper"
 		class="edit-profile-popup"
-		@click="handleClickOutside"
+		@mousedown="handleClickOutside"
 		@keydown.esc="$store.commit('setEditProfileStatus', false)"
 	>
 		<div class="edit-profile-wrapper">

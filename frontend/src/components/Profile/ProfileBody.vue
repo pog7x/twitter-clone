@@ -27,6 +27,11 @@ export default {
 			required: true,
 		},
 	},
+	watch: {
+		profileId(newValue) {
+			this.getUsersTweets();
+		},
+	},
 	data() {
 		return {
 			userTweets: [],

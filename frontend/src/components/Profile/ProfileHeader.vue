@@ -1,12 +1,12 @@
 <template>
-	<header v-if="me.id">
+	<header v-if="profile.id">
 		<div class="profile-cover-pic">
-			<img :src="picCover" />
+			<img :src="profile.pic_cover ? baseUrl + profile.pic_cover : ''" />
 		</div>
 		<div class="profile-header">
 			<div class="profile-actions">
 				<div class="profile-actions-image">
-					<img :src="avatar" />
+					<img :src="profile.pic ? baseUrl + profile.pic : ''" />
 				</div>
 				<div v-if="isMe" class="profile-actions-edit">
 					<div class="edit-button" @click="$store.commit('setEditProfileStatus', true)">Edit profile</div>
@@ -14,14 +14,14 @@
 			</div>
 			<div class="profile-info">
 				<p class="profile-info-name">
-					{{ me.name }}
+					{{ profile.name }}
 				</p>
 				<span class="profile-info-username">
-					{{ me.nickname }}
+					{{ profile.nickname }}
 				</span>
 			</div>
 			<div class="profile-description">
-				{{ me.description }}
+				{{ profile.description }}
 			</div>
 			<div class="profile-created-at">
 				<span>
@@ -35,11 +35,11 @@
 			</div>
 			<div class="profile-follower-counts">
 				<p>
-					{{ me.followings?.length }}
+					{{ profile.followings?.length }}
 					<span>Following</span>
 				</p>
 				<p>
-					{{ me.followers?.length }}
+					{{ profile.followers?.length }}
 					<span>Followers</span>
 				</p>
 			</div>
@@ -64,32 +64,39 @@ export default {
 			required: true,
 		},
 	},
+	data() {
+		return { profile: {} };
+	},
+	watch: {
+		profileId(newValue) {
+			this.profile = this.isMe ? this.me : this.profile;
+		},
+	},
 	computed: {
 		...mapGetters({
 			me: 'getMe',
 		}),
 		profileWebsite() {
 			return {
-				website: new URL(new URL(this.me.website)).host,
-				full_website: this.me.website,
+				website: new URL(new URL(this.profile.website)).host,
+				full_website: this.profile.website,
 			};
 		},
 		joinedAtDate() {
-			return `${moment(this.me.created_at).format('MMM YYYY')}`;
+			return `${moment(this.profile.created_at).format('MMM YYYY')}`;
 		},
 		isMe() {
 			return this.me.id === Number(this.profileId);
 		},
-		picCover() {
-			return this.me.pic_cover ? this.baseUrl + this.me.pic_cover : '';
-		},
-		avatar() {
-			return this.me.pic ? this.baseUrl + this.me.pic : '';
-		},
 	},
 	async mounted() {
+		if (this.isMe) {
+			this.profile = this.me;
+			return;
+		}
 		try {
 			const response = await getUser(this.axios, { id: this.profileId });
+			this.profile = response.data.result;
 		} catch (err) {
 			this.$notification({
 				type: 'error',
