@@ -47,6 +47,10 @@ export async function updateUser(http, body) {
 	return request(http, { type: 'put', path: '/api/users/me', body });
 }
 
+export async function getUser(http, body) {
+	return request(http, { type: 'get', path: `/api/users/${body.id}`, body });
+}
+
 export async function uploadMedia(http, body) {
 	return request(http, { type: 'post', path: '/api/medias', body });
 }

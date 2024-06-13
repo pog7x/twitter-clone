@@ -49,7 +49,7 @@
 
 <script>
 import BaseIcon from '@/components/Icons/BaseIcon.vue';
-import { getMe } from '@/services/api';
+import { getUser } from '@/services/api';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
 
@@ -58,9 +58,14 @@ export default {
 	components: {
 		BaseIcon,
 	},
+	props: {
+		profileId: {
+			type: String,
+			required: true,
+		},
+	},
 	computed: {
 		...mapGetters({
-			getMyProfileId: 'getMyProfileId',
 			me: 'getMe',
 		}),
 		profileWebsite() {
@@ -73,23 +78,18 @@ export default {
 			return `${moment(this.me.created_at).format('MMM YYYY')}`;
 		},
 		isMe() {
-			return this.me.id === this.getMyProfileId;
+			return this.me.id === Number(this.profileId);
 		},
 	},
 	async mounted() {
 		try {
-			const response = await getMe(this.axios, { id: this.getMyProfileId });
-			this.$store.commit('setMe', response.data.result);
-			return;
+			const response = await getUser(this.axios, { id: this.profileId });
 		} catch (err) {
 			this.$notification({
 				type: 'error',
 				message: 'Error when fetching user data',
 			});
 		}
-	},
-	methods: {
-		moment,
 	},
 };
 </script>

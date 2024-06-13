@@ -14,7 +14,6 @@
 
 <script>
 import Tweet from '@/components/Tweet/Tweet.vue';
-import { mapGetters } from 'vuex';
 import { getUsersTweets } from '@/services/api';
 
 export default {
@@ -22,13 +21,16 @@ export default {
 	components: {
 		Tweet,
 	},
+	props: {
+		profileId: {
+			type: String,
+			required: true,
+		},
+	},
 	data() {
 		return {
 			userTweets: [],
 		};
-	},
-	computed: {
-		...mapGetters(['getMyProfileId']),
 	},
 	mounted() {
 		this.getUsersTweets();
@@ -40,7 +42,7 @@ export default {
 		async getUsersTweets() {
 			try {
 				const response = await getUsersTweets(this.axios, {
-					id: this.getMyProfileId,
+					id: this.profileId,
 				});
 				this.userTweets = response.data.result;
 				this.$store.commit('setProfileTweetCount', response.data.result?.length || 0);

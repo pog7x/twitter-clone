@@ -19,6 +19,7 @@ const routes = [
 		path: '/profile/:profileId',
 		name: 'Profile',
 		component: () => import('@/views/Profile.vue'),
+		props: true,
 	},
 ];
 
@@ -37,6 +38,7 @@ router.beforeEach(async (to, from, next) => {
 		} catch (err) {
 			next({ path: '/login' });
 		}
+		return
 	}
 	next();
 });

@@ -1,7 +1,7 @@
 <template>
 	<div class="profile">
-		<profile-header />
-		<profile-body />
+		<profile-header :profileId="this.profileId" />
+		<profile-body :profileId="this.profileId" />
 		<EditProfilePopup v-if="getEditProfileStatus" />
 	</div>
 </template>
@@ -19,13 +19,15 @@ export default {
 		ProfileHeader,
 		EditProfilePopup,
 	},
-	data() {
-		return {};
+	props: {
+		profileId: {
+			type: String,
+			required: true,
+		},
 	},
 	computed: {
 		...mapGetters(['getMyProfileId', 'getEditProfileStatus']),
 	},
-	async mounted() {},
 };
 </script>
 
