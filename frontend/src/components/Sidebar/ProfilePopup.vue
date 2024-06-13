@@ -2,7 +2,7 @@
 	<div class="sidebar-profile-wrapper">
 		<div class="sidebar-profile" @click="toggleMenu">
 			<div class="sidebar-profile-pic">
-				<img :src="me.pic" />
+				<img :src="me.pic ? baseUrl + me.pic : ''" />
 			</div>
 			<div class="sidebar-profile-items">
 				<div class="profile-info">
@@ -19,7 +19,7 @@
 		<div v-if="isMenuOpened" class="sidebar-profile-popup">
 			<div class="popup-header">
 				<div class="sidebar-profile-pic">
-					<img :src="me.pic" />
+					<img :src="me.pic ? baseUrl + me.pic : ''" />
 				</div>
 				<div class="sidebar-profile-items">
 					<div class="profile-info">

@@ -38,6 +38,7 @@ services:
       - JWT_SECRET_KEY=secret
     volumes:
       - ./backend:/backend
+      - ./backend/uploads:/uploads
     ports:
       - "8080:8080"
     links:

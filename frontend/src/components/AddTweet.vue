@@ -1,7 +1,7 @@
 <template>
 	<div class="add-tweet">
 		<div class="add-tweet-profile">
-			<img :src="me.pic" />
+			<img :src="me.pic ? baseUrl + me.pic : ''" />
 		</div>
 		<div class="add-tweet-content">
 			<div class="tweet-section">

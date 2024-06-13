@@ -2,7 +2,7 @@
 	<div class="tweet">
 		<div class="tweet-owner">
 			<router-link :to="{ name: 'Profile', params: { profileId: tweetData?.author?.id } }">
-				<img :src="tweetData?.author?.pic" />
+				<img :src="tweetData?.author?.pic ? baseUrl + tweetData?.author?.pic : ''" />
 			</router-link>
 		</div>
 		<div class="tweet-content">

@@ -29,6 +29,8 @@ services:
       - "8080:8080"
     links:
       - pg
+    volumes:
+      - ./backend/uploads:/uploads
     depends_on:
       pg:
         condition: service_healthy

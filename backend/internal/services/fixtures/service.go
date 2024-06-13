@@ -40,8 +40,8 @@ func (s *Service) CreateUsers(ctx context.Context) {
 		Username:    "pog7x",
 		Name:        "developer",
 		Website:     "https://github.com/pog7x",
-		PicCover:    "https://ideogram.ai/api/images/direct/T91kUQhETeyPyiyqCOfwcQ.png",
-		Pic:         "https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Round&facialHairType=Blank&clotheType=ShirtVNeck&clotheColor=Gray01&eyeType=Happy&eyebrowType=RaisedExcitedNatural&mouthType=Smile&skinColor=Pale",
+		PicCover:    "/uploads/pic_cover_user_1.png",
+		Pic:         "/uploads/avatar_user_1.svg",
 		Description: "Just a developer that interested in Golang.",
 	})
 
@@ -51,8 +51,8 @@ func (s *Service) CreateUsers(ctx context.Context) {
 		Username:    "pog8x",
 		Name:        "web-developer",
 		Website:     "https://github.com/pog7x",
-		PicCover:    "https://ideogram.ai/api/images/direct/T91kUQhETeyPyiyqCOfwcQ.png",
-		Pic:         "https://getavataaars.com/?accessoriesType=Prescription02&avatarStyle=Circle&clotheColor=Blue01&clotheType=GraphicShirt&eyeType=Cry&eyebrowType=Default&facialHairColor=Red&facialHairType=BeardLight&graphicType=SkullOutline&hairColor=Auburn&hatColor=PastelYellow&mouthType=Grimace&skinColor=Tanned&topType=LongHairStraight",
+		PicCover:    "/uploads/pic_cover_user_2.jpeg",
+		Pic:         "/uploads/avatar_user_2.svg",
 		Description: "Just a developer that interested in JavaScript.",
 	})
 }

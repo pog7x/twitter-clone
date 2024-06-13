@@ -1,12 +1,12 @@
 <template>
 	<header v-if="me.id">
 		<div class="profile-cover-pic">
-			<img :src="me.pic_cover" />
+			<img :src="picCover" />
 		</div>
 		<div class="profile-header">
 			<div class="profile-actions">
 				<div class="profile-actions-image">
-					<img :src="me.pic" />
+					<img :src="avatar" />
 				</div>
 				<div v-if="isMe" class="profile-actions-edit">
 					<div class="edit-button" @click="$store.commit('setEditProfileStatus', true)">Edit profile</div>
@@ -79,6 +79,12 @@ export default {
 		},
 		isMe() {
 			return this.me.id === Number(this.profileId);
+		},
+		picCover() {
+			return this.me.pic_cover ? this.baseUrl + this.me.pic_cover : '';
+		},
+		avatar() {
+			return this.me.pic ? this.baseUrl + this.me.pic : '';
 		},
 	},
 	async mounted() {
