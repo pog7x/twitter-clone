@@ -133,7 +133,7 @@ export default {
 			this.isTweetEditing = false;
 		},
 		async handleLikeClick() {
-			if (!this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)) {
+			if (!this.tweetData?.likes?.filter((like) => like?.user_id === this.me.id)?.length > 0) {
 				await likeTweet(this.axios, this.tweetData.id);
 			} else {
 				await dislikeTweet(this.axios, this.tweetData.id);

@@ -1,12 +1,6 @@
 version: 2
 updates:
-  - package-ecosystem: "gomod"
-    directory: "backend/"
+  - package-ecosystem: 'gomod'
+    directory: 'backend/'
     schedule:
-      interval: "daily"
-
-  - package-ecosystem: "npm"
-    directory: "frontend/"
-    schedule:
-      interval: "daily"
-    versioning-strategy: "increase"
+      interval: 'daily'
