@@ -1,6 +1,7 @@
 module twitter-clone
 
 go 1.22.2
+toolchain go1.23.6
 
 require (
 	github.com/google/uuid v1.6.0
@@ -10,7 +11,7 @@ require (
 	github.com/samber/do v1.6.0
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.34.0
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
 )
