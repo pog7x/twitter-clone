@@ -10,7 +10,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/samber/do v1.6.0
 	github.com/sirupsen/logrus v1.9.3
-	github.com/spf13/viper v1.20.0
+	github.com/spf13/viper v1.20.1
 	golang.org/x/crypto v0.36.0
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12
