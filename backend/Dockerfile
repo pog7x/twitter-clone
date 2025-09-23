@@ -1,4 +1,4 @@
-FROM golang:1.23.0
+FROM golang:1.24.0
 WORKDIR /backend
 COPY . .
 RUN go build -o /twitter-clone main.go 
