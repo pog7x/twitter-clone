@@ -1,11 +1,6 @@
-version: "3.8"
-
 services:
   frontend_prod:
-    build:
-      context: frontend/
-      args:
-        - NUXT_PUBLIC_API_BASE_URL=http://0.0.0.0:8080
+    build: frontend
     ports:
       - "3000:3000"
 
