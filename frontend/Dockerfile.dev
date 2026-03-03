@@ -1,3 +1,5 @@
-FROM node:latest
-WORKDIR /frontend
-CMD [ -d "node_modules" ] && npm run dev || npm install && npm run dev
+FROM node:20-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+CMD ["npm", "run", "dev"]
