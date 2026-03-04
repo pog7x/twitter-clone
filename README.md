@@ -55,8 +55,8 @@ docker compose up --build -d
 ```
 
 After startup:
-- Frontend: [http://localhost:3000](http://localhost:3000)
-- Backend API: [http://localhost:8080](http://localhost:8080)
+- Frontend: [http://127.0.0.1:3000](http://127.0.0.1:3000)
+- Backend API: [http://127.0.0.1:8080](http://127.0.0.1:8080)
 
 ### Seed credentials
 
