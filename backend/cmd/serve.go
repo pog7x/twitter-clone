@@ -25,10 +25,16 @@ import (
 	"twitter-clone/internal/services/fixtures"
 )
 
+var seedFixtures bool
+
 var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Start the HTTP server",
 	RunE:  runServe,
+}
+
+func init() {
+	serveCmd.Flags().BoolVar(&seedFixtures, "seed", false, "seed database with fixtures (users, trends)")
 }
 
 func runServe(_ *cobra.Command, _ []string) error {
@@ -117,8 +123,12 @@ func runServe(_ *cobra.Command, _ []string) error {
 		r.Get("/", api.ListTrendHandler)
 	})
 
-	do.MustInvoke[*fixtures.Service](dInj).CreateTrends(context.Background())
-	do.MustInvoke[*fixtures.Service](dInj).CreateUsers(context.Background())
+	if seedFixtures {
+		log.Info("Seeding database with fixtures...")
+		do.MustInvoke[*fixtures.Service](dInj).CreateTrends(context.Background())
+		do.MustInvoke[*fixtures.Service](dInj).CreateUsers(context.Background())
+		log.Info("Fixtures seeded successfully")
+	}
 
 	return app.Listen(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), iris.WithOptimizations)
 }

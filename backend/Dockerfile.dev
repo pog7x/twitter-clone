@@ -1,4 +1,4 @@
 FROM golang:1.24.0
 RUN go install github.com/cespare/reflex@latest
 WORKDIR /backend
-CMD reflex -v -r '(\.go$|go\.mod)' -s go run main.go serve
+CMD reflex -v -r '(\.go$|go\.mod)' -s -- go run main.go serve --seed
