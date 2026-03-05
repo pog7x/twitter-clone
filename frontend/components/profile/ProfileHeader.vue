@@ -86,7 +86,7 @@ watch(
     </div>
 
     <!-- Header section -->
-    <div class="px-4 pb-4">
+    <div class="px-4 pt-3 pb-4">
       <!-- Avatar + edit button -->
       <div class="flex items-end justify-between">
         <div class="-mt-16 rounded-full border-4 border-white dark:border-black">

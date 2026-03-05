@@ -4,10 +4,30 @@ const router = useRouter()
 const config = useRuntimeConfig()
 
 const isOpen = ref(false)
+const popupRef = ref<HTMLElement | null>(null)
 
 const handleToggle = () => {
   isOpen.value = !isOpen.value
 }
+
+const handleClickOutside = (event: MouseEvent) => {
+  if (!popupRef.value) return
+  if (!popupRef.value.contains(event.target as Node)) {
+    isOpen.value = false
+  }
+}
+
+watch(isOpen, (open) => {
+  if (open) {
+    document.addEventListener('click', handleClickOutside, { capture: true })
+  } else {
+    document.removeEventListener('click', handleClickOutside, { capture: true })
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside, { capture: true })
+})
 
 const handleViewProfile = () => {
   isOpen.value = false
@@ -27,7 +47,7 @@ const avatarUrl = computed(() => {
 </script>
 
 <template>
-  <div v-if="authStore.user" class="relative mb-3">
+  <div v-if="authStore.user" ref="popupRef" class="relative mb-3">
     <!-- Popup menu -->
     <Transition name="fade">
       <div
