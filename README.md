@@ -5,7 +5,7 @@
 
   <p>
     <img src="https://img.shields.io/badge/Nuxt-3.x-00DC82?style=flat-square&logo=nuxt.js&logoColor=white" alt="Nuxt 3" />
-    <img src="https://img.shields.io/badge/Go-1.24-00ADD8?style=flat-square&logo=go&logoColor=white" alt="Go 1.24" />
+    <img src="https://img.shields.io/badge/Go-1.25-00ADD8?style=flat-square&logo=go&logoColor=white" alt="Go 1.25" />
     <img src="https://img.shields.io/badge/PostgreSQL-12-336791?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" />
     <img src="https://img.shields.io/badge/Docker-Compose-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" />
     <img src="https://img.shields.io/badge/TailwindCSS-via_@nuxt/ui-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="TailwindCSS" />
@@ -24,11 +24,11 @@ Twitter Clone replicates the core experience of X (Twitter): three-column layout
 
 ## Tech Stack
 
-| Layer | Technologies |
-|---|---|
-| **Frontend** | Nuxt 3 (SPA), Vue 3 + Composition API, Pinia, @nuxt/ui, TailwindCSS, TypeScript |
-| **Backend** | Go 1.24, Iris, GORM, JWT (HS256), Viper, Logrus, bcrypt |
-| **Infrastructure** | PostgreSQL 12, Docker + Docker Compose, nginx |
+| Layer              | Technologies                                                                    |
+| ------------------ | ------------------------------------------------------------------------------- |
+| **Frontend**       | Nuxt 3 (SPA), Vue 3 + Composition API, Pinia, @nuxt/ui, TailwindCSS, TypeScript |
+| **Backend**        | Go 1.25, Iris, GORM, JWT (HS256), Viper, Logrus, bcrypt                         |
+| **Infrastructure** | PostgreSQL 12, Docker + Docker Compose, nginx                                   |
 
 ---
 
@@ -55,12 +55,13 @@ docker compose up --build -d
 ```
 
 After startup:
+
 - Frontend: [http://127.0.0.1:3000](http://127.0.0.1:3000)
 - Backend API: [http://127.0.0.1:8080](http://127.0.0.1:8080)
 
 ### Seed credentials
 
-| Username | Password |
-|---|---|
-| `pog7x` | `pass123` |
-| `pog8x` | `pass456` |
+| Username | Password  |
+| -------- | --------- |
+| `pog7x`  | `pass123` |
+| `pog8x`  | `pass456` |
