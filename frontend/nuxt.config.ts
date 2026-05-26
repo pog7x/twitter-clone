@@ -1,6 +1,10 @@
 export default defineNuxtConfig({
   ssr: false,
 
+  ui: {
+    fonts: false,
+  },
+
   devtools: { enabled: true },
 
   modules: ['@nuxt/ui', '@pinia/nuxt'],
