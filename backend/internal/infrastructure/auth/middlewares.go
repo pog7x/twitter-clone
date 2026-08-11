@@ -15,22 +15,24 @@ func SessionJWTMiddleware(authService *authservice.AuthService, verifier *jwt.Ve
 
 		verifiedToken, err := verifier.VerifyToken([]byte(token))
 		if err != nil {
-			response.SendErrorResponse(ctx, iris.StatusUnauthorized, err.Error())
+			response.SendErrorResponse(ctx, iris.StatusUnauthorized, "invalid or expired token")
 			return
 		}
 
 		var claims sessionClaims
 		if err = verifiedToken.Claims(&claims); err != nil {
-			response.SendErrorResponse(ctx, iris.StatusBadRequest, err.Error())
+			response.SendErrorResponse(ctx, iris.StatusUnauthorized, "invalid token claims")
 			return
 		}
 
 		session, err := authService.GetSession(ctx, claims.SessionID)
 		if err != nil {
 			response.HandleServiceError(ctx, err)
+			return
 		}
 
 		ctx.Values().Set(UserIDKey, session.UserID)
+		ctx.Values().Set(SessionIDKey, session.SessionID)
 
 		ctx.Next()
 	}
@@ -47,6 +49,7 @@ func SessionSecureCookieMiddleware(authService *authservice.AuthService, sc *sec
 		}
 
 		ctx.Values().Set(UserIDKey, session.UserID)
+		ctx.Values().Set(SessionIDKey, session.SessionID)
 
 		ctx.Next()
 	}

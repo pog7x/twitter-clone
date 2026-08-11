@@ -40,6 +40,24 @@ func SessionJWTLoginHandler(authService *authservice.AuthService, signer *jwt.Si
 	}
 }
 
+// LogoutHandler drops the server-side session referenced by the request token.
+func LogoutHandler(authService *authservice.AuthService) func(ctx iris.Context) {
+	return func(ctx iris.Context) {
+		sessionID := ctx.Values().GetString(SessionIDKey)
+		if sessionID == "" {
+			response.SendErrorResponse(ctx, iris.StatusUnauthorized, "no active session")
+			return
+		}
+
+		if err := authService.AuthLogout(ctx, sessionID); err != nil {
+			response.HandleServiceError(ctx, err)
+			return
+		}
+
+		response.SendOkResponse(ctx, nil)
+	}
+}
+
 func SessionSecureCookieLoginHandler(authService *authservice.AuthService, sc *securecookie.SecureCookie) func(ctx iris.Context) {
 	return func(ctx iris.Context) {
 		// Parse request body

@@ -13,6 +13,10 @@ type Config struct {
 
 	UploadsDirPath string `mapstructure:"UPLOADS_DIR_PATH"`
 
+	// CORSAllowedOrigins is a comma separated list of origins allowed to call
+	// the API from a browser. Empty falls back to the local dev origins.
+	CORSAllowedOrigins string `mapstructure:"CORS_ALLOWED_ORIGINS"`
+
 	SessionExpiredAt time.Duration `mapstructure:"SESSION_EXPIRED_AT"`
 
 	EncodedSessionHashKey  string `mapstructure:"ENCODED_SESSION_HASH_KEY"`

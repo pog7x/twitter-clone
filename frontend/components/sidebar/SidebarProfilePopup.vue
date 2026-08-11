@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { getMediaUrl } from '~/utils/format'
+
+const api = useApi()
 const authStore = useAuthStore()
 const router = useRouter()
 const config = useRuntimeConfig()
@@ -34,16 +37,23 @@ const handleViewProfile = () => {
   router.push(`/profile/${authStore.user?.id}`)
 }
 
-const handleLogout = () => {
-  authStore.logout()
+const handleLogout = async () => {
   isOpen.value = false
+
+  try {
+    await api.logout()
+  } catch {
+    // The local session is cleared either way: a failed call must not leave
+    // the user stuck in a signed in state.
+  }
+
+  authStore.logout()
   router.push('/login')
 }
 
-const avatarUrl = computed(() => {
-  if (!authStore.user?.pic) return ''
-  return `${config.public.apiBaseUrl}${authStore.user.pic}`
-})
+const avatarUrl = computed(() =>
+  getMediaUrl(authStore.user?.pic, config.public.apiBaseUrl as string)
+)
 </script>
 
 <template>

@@ -3,6 +3,7 @@ package api
 import (
 	"time"
 
+	"twitter-clone/internal/domain/pagination"
 	"twitter-clone/internal/domain/response"
 	"twitter-clone/internal/infrastructure/database"
 	"twitter-clone/internal/repository/dbrepository"
@@ -18,16 +19,18 @@ type Trend struct {
 }
 
 func ListTrendHandler(ctx iris.Context, trendRepo *dbrepository.TrendRepository) {
+	page := pagination.FromContext(ctx)
+
 	trends, err := trendRepo.List(ctx, dbrepository.ListTrendPayload{
-		Limit: 100,
+		Limit:  page.Limit,
+		Offset: page.Offset,
 	})
 	if err != nil {
-		response.SendErrorResponse(ctx, iris.StatusInternalServerError, err.Error())
+		sendRepositoryError(ctx, err)
 		return
 	}
 
-	var trendsDto []Trend
-
+	trendsDto := make([]Trend, 0, len(trends))
 	for _, trend := range trends {
 		trendsDto = append(trendsDto, trendDto(trend))
 	}

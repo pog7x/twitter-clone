@@ -63,7 +63,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 	app.UseRouter(requestid.New())
 	app.UseRouter(recover.New())
 	app.UseRouter(irisLog.New())
-	app.UseRouter(corsheaders.CORS)
+	app.UseRouter(corsheaders.New(cfg))
 
 	app.PartyFunc("/login", func(login iris.Party) {
 		login.Post("/", auth.SessionJWTLoginHandler(
@@ -81,20 +81,24 @@ func runServe(_ *cobra.Command, _ []string) error {
 		),
 	)
 
+	apiRouter.Post("/logout/", auth.LogoutHandler(do.MustInvoke[*authservice.AuthService](dInj)))
+
 	apiRouter.Party("/tweets").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.TweetRepository](dInj))
 
 		r.Post("/", api.CreateTweetHandler)
 		r.Get("/", api.ListTweetHandler)
 
+		r.Get("/{id:uint64}/", api.GetTweetHandler)
 		r.Delete("/{id:uint64}/", api.DeleteTweetHandler)
 		r.Patch("/{id:uint64}/", api.UpdateTweetHandler)
 
 		r.Get("/user/{id:uint64}/", api.UserTweetsHandler)
 	})
 
-	apiRouter.Party("/tweets/{id:uint64}/likes/").ConfigureContainer(func(r *iris.APIContainer) {
+	apiRouter.Party("/tweets/{id:uint64}/likes").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.LikeRepository](dInj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.TweetRepository](dInj))
 
 		r.Post("/", api.CreateLikeTweetHandler)
 		r.Delete("/", api.DeleteLikeTweetHandler)
@@ -102,6 +106,7 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 	apiRouter.Party("/users").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.UserRepository](dInj))
+		r.RegisterDependency(do.MustInvoke[*dbrepository.MediaRepository](dInj))
 
 		r.Get("/me/", api.MeHandler)
 		r.Put("/me/", api.MeUpdateHandler)
@@ -109,10 +114,14 @@ func runServe(_ *cobra.Command, _ []string) error {
 
 		r.Post("/{id:uint64}/follow/", api.FollowHandler)
 		r.Delete("/{id:uint64}/follow/", api.UnfollowHandler)
+
+		r.Get("/{id:uint64}/followers/", api.FollowersHandler)
+		r.Get("/{id:uint64}/followings/", api.FollowingsHandler)
 	})
 
 	apiRouter.Party("/medias").ConfigureContainer(func(r *iris.APIContainer) {
 		r.RegisterDependency(do.MustInvoke[*dbrepository.MediaRepository](dInj))
+		r.RegisterDependency(cfg)
 
 		r.Post("/", api.CreateMediaHandler)
 	})
@@ -130,5 +139,12 @@ func runServe(_ *cobra.Command, _ []string) error {
 		log.Info("Fixtures seeded successfully")
 	}
 
-	return app.Listen(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port), iris.WithOptimizations)
+	return app.Listen(
+		fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
+		iris.WithOptimizations,
+		// Registered paths are stored without a trailing slash, so a request
+		// that carries one is otherwise answered with a redirect. For a JSON
+		// API it is better to run the handler straight away.
+		iris.WithoutPathCorrectionRedirection,
+	)
 }

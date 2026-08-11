@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { getMediaUrl } from '~/utils/format'
+
+// Kept in sync with the limits enforced by the API.
 const MAX_IMAGES = 4
+const MAX_TWEET_LENGTH = 280
 
 const emit = defineEmits<{
   (e: 'tweetCreated'): void
@@ -15,14 +19,27 @@ const imageFiles = ref<{ url: string; file: File }[]>([])
 const isSubmitting = ref(false)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
-const canSubmit = computed(() => tweetText.value.trim().length > 0 && !isSubmitting.value)
+const remainingChars = computed(() => MAX_TWEET_LENGTH - tweetText.value.trim().length)
+
+// An empty text is allowed as long as the post carries an image.
+const canSubmit = computed(
+  () =>
+    (tweetText.value.trim().length > 0 || imageFiles.value.length > 0) &&
+    remainingChars.value >= 0 &&
+    !isSubmitting.value
+)
+
 const canAddMoreImages = computed(() => imageFiles.value.length < MAX_IMAGES)
 const remainingSlots = computed(() => MAX_IMAGES - imageFiles.value.length)
 
-const avatarUrl = computed(() => {
-  if (!authStore.user?.pic) return ''
-  return `${config.public.apiBaseUrl}${authStore.user.pic}`
-})
+const avatarUrl = computed(() =>
+  getMediaUrl(authStore.user?.pic, config.public.apiBaseUrl as string)
+)
+
+const clearImages = () => {
+  imageFiles.value.forEach((image) => URL.revokeObjectURL(image.url))
+  imageFiles.value = []
+}
 
 const handleSubmit = async () => {
   if (!canSubmit.value) return
@@ -53,7 +70,7 @@ const handleSubmit = async () => {
     })
 
     tweetText.value = ''
-    imageFiles.value = []
+    clearImages()
     emit('tweetCreated')
   } catch {
     toast.add({
@@ -94,6 +111,8 @@ const handleRemoveImage = (index: number) => {
   URL.revokeObjectURL(imageFiles.value[index].url)
   imageFiles.value.splice(index, 1)
 }
+
+onBeforeUnmount(clearImages)
 </script>
 
 <template>
@@ -164,7 +183,7 @@ const handleRemoveImage = (index: number) => {
           <input
             ref="fileInputRef"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/gif,image/webp"
             multiple
             hidden
             @change="handleFileSelect"
@@ -185,13 +204,22 @@ const handleRemoveImage = (index: number) => {
           />
         </div>
 
-        <UButton
-          label="Post"
-          size="sm"
-          :disabled="!canSubmit"
-          :loading="isSubmitting"
-          @click="handleSubmit"
-        />
+        <div class="flex items-center gap-3">
+          <span
+            v-if="tweetText.length > 0"
+            class="text-sm"
+            :class="remainingChars < 0 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'"
+          >
+            {{ remainingChars }}
+          </span>
+          <UButton
+            label="Post"
+            size="sm"
+            :disabled="!canSubmit"
+            :loading="isSubmitting"
+            @click="handleSubmit"
+          />
+        </div>
       </div>
     </div>
   </div>

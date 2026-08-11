@@ -1,37 +1,14 @@
 <script setup lang="ts">
-import type { Tweet } from '~/types'
-
 const api = useApi()
-const toast = useToast()
 const uiStore = useUiStore()
 
-const tweets = ref<Tweet[]>([])
+const { tweets, isLoading, hasMore, refresh, loadMore } = usePaginatedTweets((query) =>
+  api.getTweets(query)
+)
 
-const fetchTweets = async () => {
-  try {
-    const response = await api.getTweets()
-    tweets.value = response.result ?? []
-  } catch {
-    toast.add({
-      title: 'Error',
-      description: 'Failed to load tweets',
-      color: 'red',
-      icon: 'i-lucide-alert-circle',
-    })
-  }
-}
+onMounted(refresh)
 
-const handleTweetDeleted = () => {
-  fetchTweets()
-}
-
-const handleTweetsUpdated = () => {
-  fetchTweets()
-}
-
-onMounted(fetchTweets)
-
-watch(() => uiStore.tweetCreatedSignal, fetchTweets)
+watch(() => uiStore.tweetCreatedSignal, refresh)
 </script>
 
 <template>
@@ -44,7 +21,7 @@ watch(() => uiStore.tweetCreatedSignal, fetchTweets)
     </div>
 
     <!-- Composer -->
-    <TweetComposer @tweet-created="fetchTweets" />
+    <TweetComposer @tweet-created="refresh" />
 
     <!-- Divider -->
     <div class="h-2 bg-gray-100 dark:bg-gray-900/50" />
@@ -55,13 +32,23 @@ watch(() => uiStore.tweetCreatedSignal, fetchTweets)
         v-for="tweet in tweets"
         :key="tweet.id"
         :tweet="tweet"
-        @deleted="handleTweetDeleted"
-        @updated="handleTweetsUpdated"
+        @deleted="refresh"
+        @updated="refresh"
       />
+
+      <div v-if="hasMore" class="flex justify-center p-4">
+        <UButton
+          variant="ghost"
+          color="primary"
+          label="Show more"
+          :loading="isLoading"
+          @click="loadMore"
+        />
+      </div>
     </div>
 
     <div
-      v-else
+      v-else-if="!isLoading"
       class="flex flex-col items-center justify-center px-8 py-16 text-gray-500 dark:text-gray-400"
     >
       <UIcon name="i-lucide-message-circle" class="mb-4 size-12" />

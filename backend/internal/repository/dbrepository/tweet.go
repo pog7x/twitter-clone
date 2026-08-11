@@ -27,15 +27,39 @@ func NewTweetDBRepository(i *do.Injector) (*TweetRepository, error) {
 type CreateTweetPayload struct {
 	AuthorID  uint64
 	TweetData string
-	Media     []database.Media
+	MediaIDs  []uint64
 }
 
+// Create stores the tweet and attaches the uploads in one transaction. An
+// upload is only attached when it belongs to the author and is not already
+// used by another tweet; otherwise nothing is written at all.
 func (r *TweetRepository) Create(ctx context.Context, payload CreateTweetPayload) (*database.Tweet, error) {
-	tweet := database.Tweet{AuthorID: payload.AuthorID, TweetData: payload.TweetData, TweetMedia: payload.Media}
+	tweet := database.Tweet{AuthorID: payload.AuthorID, TweetData: payload.TweetData}
 
-	result := r.db.WithContext(ctx).Create(&tweet)
-	if err := result.Error; err != nil {
-		return nil, ErrInternal
+	err := r.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&tweet).Error; err != nil {
+			return ErrInternal
+		}
+
+		if len(payload.MediaIDs) == 0 {
+			return nil
+		}
+
+		result := tx.Model(&database.Media{}).
+			Where("id IN ? AND owner_id = ? AND tweet_id IS NULL", payload.MediaIDs, payload.AuthorID).
+			Update("tweet_id", tweet.ID)
+		if result.Error != nil {
+			return ErrInternal
+		}
+
+		if result.RowsAffected != int64(len(payload.MediaIDs)) {
+			return ErrInvalidMedia
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	return &tweet, nil
@@ -51,7 +75,6 @@ func (r *TweetRepository) Get(ctx context.Context, payload GetTweetPayload) (*da
 	result := r.db.WithContext(ctx).
 		Joins("Author").
 		Preload("TweetMedia").
-		Preload("Likes").
 		First(&tweet, payload.TweetID)
 	if err := result.Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -68,13 +91,14 @@ type ListTweetPayload struct {
 	AuthorID      uint64
 }
 
+// List returns a page of tweets, newest first. Likes are not preloaded: their
+// aggregates come from Stats so the payload stays flat.
 func (r *TweetRepository) List(ctx context.Context, payload ListTweetPayload) ([]database.Tweet, error) {
 	var tweets []database.Tweet
 
 	result := r.db.WithContext(ctx).
 		Joins("Author").
 		Preload("TweetMedia").
-		Preload("Likes").
 		Where(&database.Tweet{AuthorID: payload.AuthorID}).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: "id"}, Desc: true}).
 		Limit(payload.Limit).
@@ -85,6 +109,60 @@ func (r *TweetRepository) List(ctx context.Context, payload ListTweetPayload) ([
 	}
 
 	return tweets, nil
+}
+
+// TweetStats holds the per-tweet aggregates rendered by the client.
+type TweetStats struct {
+	LikesCount int
+	IsLiked    bool
+}
+
+// Stats returns like aggregates for the given tweets in two grouped queries,
+// instead of loading every like row of every tweet.
+func (r *TweetRepository) Stats(ctx context.Context, tweetIDs []uint64, viewerID uint64) (map[uint64]TweetStats, error) {
+	stats := make(map[uint64]TweetStats, len(tweetIDs))
+
+	if len(tweetIDs) == 0 {
+		return stats, nil
+	}
+
+	var counts []struct {
+		TweetID uint64
+		Count   int
+	}
+
+	if err := r.db.WithContext(ctx).
+		Model(&database.Like{}).
+		Select("tweet_id, COUNT(*) AS count").
+		Where("tweet_id IN ?", tweetIDs).
+		Group("tweet_id").
+		Find(&counts).Error; err != nil {
+		return nil, ErrInternal
+	}
+
+	for _, c := range counts {
+		stats[c.TweetID] = TweetStats{LikesCount: c.Count}
+	}
+
+	if viewerID != 0 {
+		var likedIDs []uint64
+
+		if err := r.db.WithContext(ctx).
+			Model(&database.Like{}).
+			Where("user_id = ? AND tweet_id IN ?", viewerID, tweetIDs).
+			Distinct().
+			Pluck("tweet_id", &likedIDs).Error; err != nil {
+			return nil, ErrInternal
+		}
+
+		for _, id := range likedIDs {
+			stat := stats[id]
+			stat.IsLiked = true
+			stats[id] = stat
+		}
+	}
+
+	return stats, nil
 }
 
 type UpdateTweetPayload struct {
@@ -109,7 +187,11 @@ func (r *TweetRepository) Update(ctx context.Context, tweetID uint64, payload Up
 		return nil, ErrInternal
 	}
 
-	return &tweet, nil
+	if result.RowsAffected == 0 {
+		return nil, ErrNotFound
+	}
+
+	return r.Get(ctx, GetTweetPayload{TweetID: tweetID})
 }
 
 func (r *TweetRepository) Delete(ctx context.Context, tweetID uint64) error {

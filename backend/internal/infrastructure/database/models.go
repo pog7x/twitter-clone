@@ -72,22 +72,27 @@ func (t *Tweet) AfterDelete(tx *gorm.DB) error {
 
 type Media struct {
 	ID        uint64 `gorm:"primaryKey"`
-	TweetID   *uint64
+	TweetID *uint64
+	// OwnerID is the uploader. It is deliberately a plain indexed column
+	// rather than a relation: adding a foreign key would fail to migrate
+	// databases that already hold uploads made before ownership existed.
+	OwnerID   uint64 `gorm:"index"`
 	Link      string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
+// Like is hard-deleted: a soft-deleted row would keep occupying the unique
+// (user_id, tweet_id) slot and block the user from liking the tweet again.
 type Like struct {
 	ID        uint64 `gorm:"primaryKey"`
-	TweetID   uint64
-	Tweet     Tweet `gorm:"foreignKey:TweetID;references:ID;"`
-	UserID    uint64
-	User      User `gorm:"foreignKey:UserID;references:ID;"`
+	TweetID   uint64 `gorm:"uniqueIndex:idx_like_user_tweet;not null"`
+	Tweet     Tweet  `gorm:"foreignKey:TweetID;references:ID;"`
+	UserID    uint64 `gorm:"uniqueIndex:idx_like_user_tweet;not null"`
+	User      User   `gorm:"foreignKey:UserID;references:ID;"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type Trend struct {

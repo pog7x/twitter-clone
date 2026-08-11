@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { Tweet } from '~/types'
-
 interface Props {
   profileId: string
 }
@@ -8,10 +6,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const api = useApi()
-const uiStore = useUiStore()
-const toast = useToast()
 
-const tweets = ref<Tweet[]>([])
 const activeTab = ref('tweets')
 
 const tabs = [
@@ -21,31 +16,12 @@ const tabs = [
   { key: 'likes', label: 'Likes' },
 ]
 
-const fetchUserTweets = async () => {
-  try {
-    const response = await api.getUserTweets(props.profileId)
-    tweets.value = response.result ?? []
-    uiStore.profileTweetCount = tweets.value.length
-  } catch {
-    toast.add({
-      title: 'Error',
-      description: 'Failed to load posts',
-      color: 'red',
-      icon: 'i-lucide-alert-circle',
-    })
-  }
-}
+const { tweets, isLoading, hasMore, refresh, loadMore } = usePaginatedTweets((query) =>
+  api.getUserTweets(props.profileId, query)
+)
 
-const handleTweetDeleted = () => {
-  fetchUserTweets()
-}
-
-const handleTweetUpdated = () => {
-  fetchUserTweets()
-}
-
-watch(() => props.profileId, fetchUserTweets)
-onMounted(fetchUserTweets)
+watch(() => props.profileId, refresh)
+onMounted(refresh)
 </script>
 
 <template>
@@ -78,13 +54,23 @@ onMounted(fetchUserTweets)
         v-for="tweet in tweets"
         :key="tweet.id"
         :tweet="tweet"
-        @deleted="handleTweetDeleted"
-        @updated="handleTweetUpdated"
+        @deleted="refresh"
+        @updated="refresh"
       />
+
+      <div v-if="hasMore" class="flex justify-center p-4">
+        <UButton
+          variant="ghost"
+          color="primary"
+          label="Show more"
+          :loading="isLoading"
+          @click="loadMore"
+        />
+      </div>
     </div>
 
     <div
-      v-else
+      v-else-if="!isLoading"
       class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400"
     >
       <p class="text-lg">No posts yet</p>

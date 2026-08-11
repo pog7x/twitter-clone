@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Tweet } from '~/types'
-import { formatRelativeTime, getMediaUrl } from '~/utils/format'
+import { formatRelativeTime, formatCount, getMediaUrl } from '~/utils/format'
+
+const MAX_TWEET_LENGTH = 280
 
 interface Props {
   tweet: Tweet
@@ -14,13 +16,26 @@ const emit = defineEmits<{
 }>()
 
 const api = useApi()
-const authStore = useAuthStore()
 const uiStore = useUiStore()
 const config = useRuntimeConfig()
 const toast = useToast()
 
 const isEditing = ref(false)
+const isLiking = ref(false)
 const editedContent = ref(props.tweet.content)
+
+// Like state is kept locally so a click updates just this card instead of
+// forcing the parent to refetch the whole list.
+const likesCount = ref(props.tweet.likes_count)
+const isLiked = ref(props.tweet.is_liked)
+
+watch(
+  () => props.tweet,
+  (tweet) => {
+    likesCount.value = tweet.likes_count
+    isLiked.value = tweet.is_liked
+  }
+)
 
 const avatarUrl = computed(() =>
   getMediaUrl(props.tweet.author?.pic, config.public.apiBaseUrl as string)
@@ -30,22 +45,28 @@ const tweetImages = computed(() =>
   props.tweet.attachments?.map((path) => getMediaUrl(path, config.public.apiBaseUrl as string)) ?? []
 )
 
-const isLikedByUser = computed(() =>
-  props.tweet.likes?.some((like) => like.user_id === authStore.user?.id) ?? false
-)
+const remainingChars = computed(() => MAX_TWEET_LENGTH - editedContent.value.trim().length)
 
-const likeCount = computed(() => props.tweet.likes?.length ?? 0)
+const canSaveEdit = computed(() => {
+  const trimmed = editedContent.value.trim()
+  return (trimmed.length > 0 || tweetImages.value.length > 0) && remainingChars.value >= 0
+})
 
 const handleLikeClick = async () => {
+  if (isLiking.value) return
+
+  isLiking.value = true
   try {
-    if (isLikedByUser.value) {
-      await api.unlikeTweet(props.tweet.id)
-    } else {
-      await api.likeTweet(props.tweet.id)
-    }
-    emit('updated')
+    const { result } = isLiked.value
+      ? await api.unlikeTweet(props.tweet.id)
+      : await api.likeTweet(props.tweet.id)
+
+    likesCount.value = result.likes_count
+    isLiked.value = result.is_liked
   } catch {
     toast.add({ title: 'Error', description: 'Failed to update like', color: 'error' })
+  } finally {
+    isLiking.value = false
   }
 }
 
@@ -65,6 +86,8 @@ const handleStartEdit = () => {
 }
 
 const handleSaveEdit = async () => {
+  if (!canSaveEdit.value) return
+
   try {
     await api.updateTweet({ id: props.tweet.id, tweet_data: editedContent.value })
     toast.add({ title: 'Post updated', color: 'success', icon: 'i-lucide-check-circle' })
@@ -114,8 +137,9 @@ const handleImageClick = (index: number) => {
           </span>
         </div>
 
-        <!-- Edit menu -->
+        <!-- Edit menu, only for posts owned by the current user -->
         <TweetEditMenu
+          v-if="tweet.is_owner"
           @edit="handleStartEdit"
           @delete="handleDelete"
         />
@@ -133,9 +157,15 @@ const handleImageClick = (index: number) => {
           class="w-full resize-none rounded-lg border border-gray-300 bg-transparent p-3 text-gray-900 outline-none focus:border-sky-500 dark:border-gray-700 dark:text-white"
           rows="3"
         />
-        <div class="mt-2 flex justify-end gap-2">
+        <div class="mt-2 flex items-center justify-end gap-3">
+          <span
+            class="text-sm"
+            :class="remainingChars < 0 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'"
+          >
+            {{ remainingChars }}
+          </span>
           <UButton variant="outline" color="neutral" size="sm" label="Cancel" @click="handleCancelEdit" />
-          <UButton size="sm" label="Save" @click="handleSaveEdit" />
+          <UButton size="sm" label="Save" :disabled="!canSaveEdit" @click="handleSaveEdit" />
         </div>
       </div>
 
@@ -197,19 +227,21 @@ const handleImageClick = (index: number) => {
         </button>
 
         <button
-          class="group flex items-center gap-1 transition-colors"
-          :class="isLikedByUser ? 'text-pink-500' : 'text-gray-500 hover:text-pink-500'"
-          aria-label="Like"
+          class="group flex items-center gap-1 transition-colors disabled:opacity-60"
+          :class="isLiked ? 'text-pink-500' : 'text-gray-500 hover:text-pink-500'"
+          :aria-label="isLiked ? 'Unlike' : 'Like'"
+          :aria-pressed="isLiked"
+          :disabled="isLiking"
           @click="handleLikeClick"
         >
           <span class="rounded-full p-2 transition-colors group-hover:bg-pink-500/10">
             <UIcon
               name="i-lucide-heart"
               class="size-[18px]"
-              :class="{ 'fill-current': isLikedByUser }"
+              :class="{ 'fill-current': isLiked }"
             />
           </span>
-          <span v-if="likeCount > 0" class="text-sm">{{ likeCount }}</span>
+          <span v-if="likesCount > 0" class="text-sm">{{ formatCount(likesCount) }}</span>
         </button>
 
         <button

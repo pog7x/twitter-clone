@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { User } from '~/types'
-import { formatJoinDate, getMediaUrl } from '~/utils/format'
+import { formatCount, formatJoinDate, getMediaUrl } from '~/utils/format'
 
 interface Props {
   profileId: string
@@ -16,7 +16,7 @@ const toast = useToast()
 
 const profile = ref<User | null>(null)
 
-const isMe = computed(() => authStore.user?.id === Number(props.profileId))
+const isMe = computed(() => profile.value?.is_me ?? false)
 
 const coverUrl = computed(() =>
   getMediaUrl(profile.value?.pic_cover, config.public.apiBaseUrl as string)
@@ -40,20 +40,18 @@ const websiteDisplay = computed(() => {
   }
 })
 
+// The profile is always read from the API: counts such as tweets_count are
+// computed server side and would go stale if taken from the auth store.
 const fetchProfile = async () => {
-  if (isMe.value && authStore.user) {
-    profile.value = authStore.user
-    return
-  }
-
   try {
-    const response = await api.getUser(props.profileId)
-    profile.value = response.result
+    const { result } = await api.getUser(props.profileId)
+    profile.value = result
+    uiStore.profileTweetCount = result.tweets_count
   } catch {
     toast.add({
       title: 'Error',
       description: 'Failed to load profile',
-      color: 'red',
+      color: 'error',
       icon: 'i-lucide-alert-circle',
     })
   }
@@ -62,12 +60,11 @@ const fetchProfile = async () => {
 watch(() => props.profileId, fetchProfile)
 onMounted(fetchProfile)
 
+// Pick up edits made through the profile modal.
 watch(
   () => authStore.user,
-  (newUser) => {
-    if (isMe.value && newUser) {
-      profile.value = newUser
-    }
+  () => {
+    if (isMe.value) fetchProfile()
   },
   { deep: true }
 )
@@ -142,11 +139,11 @@ watch(
       <!-- Follower counts -->
       <div class="mt-3 flex gap-4 text-sm">
         <span class="text-gray-900 dark:text-white">
-          <strong>{{ profile.followings?.length ?? 0 }}</strong>
+          <strong>{{ formatCount(profile.followings_count) }}</strong>
           <span class="text-gray-500 dark:text-gray-400"> Following</span>
         </span>
         <span class="text-gray-900 dark:text-white">
-          <strong>{{ profile.followers?.length ?? 0 }}</strong>
+          <strong>{{ formatCount(profile.followers_count) }}</strong>
           <span class="text-gray-500 dark:text-gray-400"> Followers</span>
         </span>
       </div>
