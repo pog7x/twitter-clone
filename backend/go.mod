@@ -29,7 +29,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0 // indirect
+	github.com/gomarkdown/markdown v0.0.0-20260411013819-759bbc3e3207 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/iris-contrib/schema v0.0.6 // indirect
