@@ -34,7 +34,7 @@ services:
         condition: service_healthy
 
   pg:
-    image: postgres:12
+    image: postgres:15
     environment:
       - POSTGRES_DB=twitter_clone
       - POSTGRES_USER=user
